@@ -1,12 +1,2 @@
-const menu = document.querySelector('.menu');
-const nav = document.querySelector('nav');
-if (menu && nav) {
-  menu.addEventListener('click', () => {
-    const open = nav.classList.toggle('open');
-    menu.setAttribute('aria-expanded', String(open));
-  });
-  nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
-    nav.classList.remove('open');
-    menu.setAttribute('aria-expanded', 'false');
-  }));
-}
+const menuBtn=document.querySelector('.menu-btn');const nav=document.querySelector('.nav');menuBtn?.addEventListener('click',()=>{const open=nav.classList.toggle('open');menuBtn.setAttribute('aria-expanded',String(open));});document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));document.getElementById('year').textContent=new Date().getFullYear();
+const form=document.getElementById('briefForm');form?.addEventListener('submit',e=>{e.preventDefault();const d=new FormData(form);const subject='Lead Generation Project Inquiry / Free Sample Request';const body=`Hi Moudud,\n\nI would like to discuss a lead generation project.\n\nName: ${d.get('name')||''}\nBusiness Email: ${d.get('email')||''}\nTarget Industry: ${d.get('industry')||''}\nTarget Location: ${d.get('location')||''}\nDecision-Maker Titles: ${d.get('titles')||''}\nApprox. Number of Leads: ${d.get('quantity')||''}\nAdditional Requirements: ${d.get('requirements')||''}\n\nThank you.`;window.location.href=`mailto:ahmed.moududcd@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;});

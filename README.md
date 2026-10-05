@@ -1,12 +1,5 @@
-# Moudud Karim Portfolio — Version 2
+# Moudud Karim Portfolio
+Conversion-focused static portfolio for GitHub Pages.
 
-Static portfolio website for GitHub Pages.
-
-## Publish / update
-Upload these files to the root of the GitHub repository and commit the changes:
-- index.html
-- style.css
-- script.js
-- assets/profile.png
-
-GitHub Pages can continue using the `main` branch and `/(root)` folder.
+## Publish
+Upload `index.html`, `style.css`, `script.js`, and the complete `assets` folder to the repository root. Keep `assets/profile.png` in that exact path.
