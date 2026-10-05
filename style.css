@@ -19,3 +19,36 @@
 .modal-privacy{margin:0;padding:13px 24px 20px;color:#667085;font-size:.86rem}
 body.modal-open{overflow:hidden}
 @media(max-width:640px){.sample-modal{padding:10px}.sample-modal-panel{border-radius:16px}.sample-modal-head{padding:16px}.sample-modal-image-wrap{padding:10px;overflow:auto}.sample-modal-image-wrap img{min-width:760px}.modal-privacy{padding:10px 16px 16px}}
+
+/* Premium hover treatment for contact CTA buttons */
+.contact-links a{
+  position:relative;
+  overflow:hidden;
+  transition:transform .22s ease,background-color .22s ease,border-color .22s ease,box-shadow .22s ease,color .22s ease;
+}
+.contact-links a::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,0));
+  opacity:0;
+  transition:opacity .22s ease;
+}
+.contact-links a:hover,
+.contact-links a:focus-visible{
+  transform:translateY(-3px);
+  background:#2563eb;
+  border-color:#4f7ff0;
+  color:#fff;
+  box-shadow:0 12px 30px rgba(37,99,235,.28);
+  outline:none;
+}
+.contact-links a:hover::before,
+.contact-links a:focus-visible::before{opacity:1}
+.contact-links a:active{transform:translateY(-1px)}
+
+/* Make project-sample affordance feel interactive too */
+.sample-trigger{display:inline-flex;align-items:center;gap:6px;transition:transform .2s ease,color .2s ease}
+.sample-trigger:hover,.sample-trigger:focus-visible{transform:translateX(4px);color:#1d4ed8;outline:none}
+.modal-close{transition:transform .2s ease,background-color .2s ease,border-color .2s ease}
+.modal-close:hover,.modal-close:focus-visible{transform:rotate(6deg) scale(1.06);background:#eef3ff;border-color:#b8caf1;outline:none}
