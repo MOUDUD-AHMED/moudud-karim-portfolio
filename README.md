@@ -1,13 +1,12 @@
-# Moudud Karim Portfolio
-Static portfolio website ready for GitHub Pages.
+# Moudud Karim Portfolio — Version 2
 
-## Publish on GitHub Pages
-1. Create a new public GitHub repository.
-2. Upload all files and the `assets` folder from this project.
-3. Open repository Settings > Pages.
-4. Under Build and deployment, choose `Deploy from a branch`.
-5. Select `main` and `/ (root)`, then Save.
-6. GitHub will show the live site URL after deployment.
+Static portfolio website for GitHub Pages.
 
-## Edit later
-Update text in `index.html`, styling in `style.css`, and replace `assets/profile.png` to change the profile image.
+## Publish / update
+Upload these files to the root of the GitHub repository and commit the changes:
+- index.html
+- style.css
+- script.js
+- assets/profile.png
+
+GitHub Pages can continue using the `main` branch and `/(root)` folder.
