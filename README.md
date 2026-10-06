@@ -1,5 +1,9 @@
-# Moudud Karim Portfolio — Scroll Spy Final
+# Moudud Karim Portfolio — Bugfix Final
 
-GitHub Pages ready. Includes MK branding, real project screenshots, on-site lightbox, animated counters, hover effects, and active-section navigation (scroll spy).
+Fixes included:
+- Scroll-spy now follows the real page section order, so Work highlights correctly when the Work section is in view.
+- Project sample links and screenshot previews reliably open the on-site lightbox.
+- Real project screenshots remain in `assets/projects/`.
+- CSS/JS cache-busting added for GitHub Pages updates.
 
-Upload the contents of this folder to the repository root, preserving the `assets/` folder structure.
+Upload all extracted files and the full `assets` folder to the repository root, replacing the existing files.
