@@ -1,5 +1,5 @@
-# Moudud Karim Portfolio
-Conversion-focused static portfolio for GitHub Pages.
+# Moudud Karim Portfolio — Scroll Spy Final
 
-## Publish
-Upload `index.html`, `style.css`, `script.js`, and the complete `assets` folder to the repository root. Keep `assets/profile.png` in that exact path.
+GitHub Pages ready. Includes MK branding, real project screenshots, on-site lightbox, animated counters, hover effects, and active-section navigation (scroll spy).
+
+Upload the contents of this folder to the repository root, preserving the `assets/` folder structure.

@@ -18,3 +18,57 @@ const closeModal=()=>{if(!modal)return;modal.classList.remove('is-open');modal.s
 document.querySelectorAll('.sample-trigger').forEach(trigger=>trigger.addEventListener('click',e=>{e.preventDefault();lastTrigger=trigger;modalImg.src=trigger.dataset.image;modalTitle.textContent=trigger.dataset.title||'Project sample';modal.classList.add('is-open');modal.setAttribute('aria-hidden','false');document.body.classList.add('modal-open');modal.querySelector('.modal-close').focus()}));
 document.querySelectorAll('[data-close-modal]').forEach(el=>el.addEventListener('click',closeModal));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal?.classList.contains('is-open'))closeModal()});
+
+// Make the real screenshot preview itself keyboard-accessible.
+document.querySelectorAll('.real-sample-preview').forEach((preview) => {
+  preview.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      preview.click();
+    }
+  });
+});
+
+// Active section navigation (scroll spy).
+(() => {
+  const links = [...document.querySelectorAll('.nav a[href^="#"]')];
+  if (!links.length) return;
+
+  const items = links.map(link => {
+    const id = link.getAttribute('href').slice(1);
+    return { link, section: document.getElementById(id) };
+  }).filter(item => item.section);
+
+  const setActive = (id) => {
+    links.forEach(link => {
+      const active = link.getAttribute('href') === `#${id}`;
+      link.classList.toggle('active', active);
+      if (active) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  };
+
+  const updateActiveSection = () => {
+    const marker = window.scrollY + Math.max(120, window.innerHeight * 0.28);
+    let current = items[0];
+    for (const item of items) {
+      if (item.section.offsetTop <= marker) current = item;
+    }
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
+      current = items[items.length - 1];
+    }
+    if (current) setActive(current.section.id);
+  };
+
+  let ticking = false;
+  const requestUpdate = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { updateActiveSection(); ticking = false; });
+  };
+
+  window.addEventListener('scroll', requestUpdate, { passive: true });
+  window.addEventListener('resize', requestUpdate);
+  window.addEventListener('load', updateActiveSection);
+  updateActiveSection();
+})();
