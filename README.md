@@ -10,3 +10,4 @@ This build adds a dedicated Web Design & Development service page while preservi
 
 ## Deploy
 Upload/replace **all files and folders** in the repository root. The new `web-design-development.html` file is required.
+Yes done
