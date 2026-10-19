@@ -3,37 +3,665 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Web Design & Development | Moudud Karim</title>
+  <meta name="color-scheme" content="dark light" />
+  <script>
+    // Apply the visitor's saved theme before first paint (best-effort: private/incognito windows may not persist it). Default theme is dark.
+    (function(){try{var t=localStorage.getItem('mk-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+  </script>
+  <title>Web Design &amp; Development | Moudud Karim</title>
   <meta name="description" content="Modern responsive business websites, landing pages, portfolio websites, WordPress, React and Next.js frontend development." />
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=web1" />
+  <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwYjE3MmEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTYzYzc4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjMwIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTI3IDg3VjQxaDEwbDE3IDI0IDE3LTI0aDEwdjQ2SDY5VjYwTDU0IDgxIDM5IDYwdjI3SDI3WiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik04MyA0MWgxMnYxOGwxNS0xOGgxNWwtMTkgMjIgMjAgMjRoLTE1TDk1IDY4djE5SDgzVjQxWiIgZmlsbD0iIzZlYTBmZiIvPgo8L3N2Zz4K" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme:dark;
+    --bg:#070c11;
+    --bg-2:#0b1219;
+    --surface:#0e1620;
+    --glass:rgba(255,255,255,.045);
+    --glass-strong:rgba(255,255,255,.075);
+    --ink:#f4f7f9;
+    --ink-soft:#a9b7c0;
+    --ink-faint:#7d8f9a;
+    --line:rgba(255,255,255,.09);
+    --line-strong:rgba(255,255,255,.16);
+    --accent:#e07f3f;        /* burnt copper — industrial, warm */
+    --accent-2:#f4b860;      /* amber highlight */
+    --accent-deep:#c65a1c;
+    --accent-strong:#f09a5c;
+    --accent-soft:rgba(224,127,63,.13);
+    --grad:linear-gradient(120deg,var(--accent-2) 0%,var(--accent) 55%,var(--accent-deep) 100%);
+    --ok:#5cc98d;
+    --radius:14px;
+    --shadow:0 24px 60px rgba(0,0,0,.5);
+    --glow:0 12px 34px rgba(224,127,63,.28);
+  }
+  /* ---------- Light theme (dark stays the default) ---------- */
+  :root[data-theme="light"]{
+    color-scheme:light;
+    --bg:#f7f4f0;
+    --bg-2:#efe9e1;
+    --surface:#ffffff;
+    --glass:rgba(24,20,16,.045);
+    --glass-strong:rgba(24,20,16,.08);
+    --ink:#181410;
+    --ink-soft:#4d5a63;
+    --ink-faint:#71808a;
+    --line:rgba(24,20,16,.11);
+    --line-strong:rgba(24,20,16,.2);
+    --accent:#cf6f24;
+    --accent-2:#b25a10;
+    --accent-deep:#a34a12;
+    --accent-strong:#b4531a;
+    --accent-soft:rgba(198,90,28,.12);
+    --grad:linear-gradient(120deg,#e89b3c 0%,#d96f1e 55%,#b4531a 100%);
+    --ok:#1f8a4e;
+    --shadow:0 24px 60px rgba(60,35,10,.18);
+    --glow:0 12px 34px rgba(224,127,63,.3);
+  }
+  :root[data-theme="light"] .site-header{background:rgba(250,248,245,.78)}
+  :root[data-theme="light"] .site-header.scrolled{background:rgba(250,248,245,.94);box-shadow:0 14px 40px rgba(60,35,10,.14)}
+  :root[data-theme="light"] .hero::before{
+    background-image:
+      linear-gradient(rgba(24,20,16,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(24,20,16,.05) 1px,transparent 1px);
+  }
+  :root[data-theme="light"] .hero::after{opacity:.26}
+  :root[data-theme="light"] .card,
+  :root[data-theme="light"] .process-step{background:linear-gradient(165deg,rgba(255,255,255,.85),rgba(255,255,255,.45))}
+  :root[data-theme="light"] .card:hover{box-shadow:0 22px 44px rgba(60,35,10,.16)}
+  :root[data-theme="light"] .card .ghost-num{-webkit-text-stroke:1px rgba(24,20,16,.12)}
+  :root[data-theme="light"] .tool-row span{background:rgba(24,20,16,.04)}
+  :root[data-theme="light"] .btn.secondary:hover{color:var(--ink)}
+  :root[data-theme="light"] .browser-mock{background:linear-gradient(165deg,rgba(255,255,255,.9),rgba(255,255,255,.55));box-shadow:0 22px 44px rgba(60,35,10,.16)}
+  :root[data-theme="light"] .mock-kicker,
+  :root[data-theme="light"] .mock-title,
+  :root[data-theme="light"] .mock-copy{background:rgba(24,20,16,.14)}
+  /* The contact band stays a deep dark panel in both themes; restore its dark tokens locally. */
+  :root[data-theme="light"] .dark-contact{
+    --ink:#f4f7f9;--ink-soft:#a9b7c0;--ink-faint:#8fa3af;
+    --line:rgba(255,255,255,.1);--line-strong:rgba(255,255,255,.18);
+    --glass:rgba(255,255,255,.05);--glass-strong:rgba(255,255,255,.08);
+    --accent-2:#f4b860;--shadow:0 24px 60px rgba(0,0,0,.5);
+    color:#f4f7f9;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Libre Franklin",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    transition:background-color .35s ease,color .35s ease;
+  }
+  h1,h2,h3{line-height:1.14;margin:0;letter-spacing:-.015em}
+  p{margin:0}
+  a{color:var(--accent-strong)}
+  img{max-width:100%}
+  .container{max-width:1120px;margin:0 auto;padding:0 24px;position:relative}
+  ::selection{background:var(--accent);color:#14100b}
+  section{scroll-margin-top:92px}
+
+  /* ---------- Scroll reveal ---------- */
+  .reveal{
+    opacity:0;transform:translateY(28px);
+    transition:opacity .8s ease var(--rd,0s),transform .8s cubic-bezier(.16,.8,.26,1) var(--rd,0s);
+    will-change:opacity,transform;
+  }
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    html{scroll-behavior:auto}
+  }
+
+  /* ---------- Header / nav ---------- */
+  .site-header{
+    position:sticky;top:0;z-index:60;
+    background:rgba(7,12,17,.72);
+    backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
+    border-bottom:1px solid var(--line);
+    transition:box-shadow .3s ease,background .3s ease;
+  }
+  .site-header.scrolled{background:rgba(7,12,17,.9);box-shadow:0 14px 40px rgba(0,0,0,.45)}
+  .nav-wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+  .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
+  .brand-logo{width:34px;height:34px;flex:none;border-radius:9px;padding:3px;background:#0d1a2e;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+  .nav{display:flex;gap:26px;align-items:center}
+  .nav a{
+    color:var(--ink-soft);text-decoration:none;font-size:15px;font-weight:500;position:relative;padding:4px 0;
+  }
+  .nav .back-link::after{
+    content:"";position:absolute;left:0;bottom:0;height:2px;width:0;border-radius:2px;
+    background:var(--grad);transition:width .3s ease;
+  }
+  .nav .back-link:hover{color:var(--ink)}
+  .nav .back-link:hover::after{width:100%}
+  .nav .nav-cta{
+    background:var(--grad);color:#17110a;padding:10px 20px;border-radius:9px;
+    font-weight:700;box-shadow:0 6px 20px rgba(224,127,63,.25);
+    transition:transform .25s ease,box-shadow .25s ease;
+  }
+  .nav .nav-cta:hover{transform:translateY(-1px);box-shadow:var(--glow);color:#17110a}
+  .header-actions{display:flex;align-items:center;gap:10px}
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;flex:none;
+    width:42px;height:42px;border-radius:9px;cursor:pointer;
+    background:var(--glass);border:1px solid var(--line);color:var(--accent-2);
+    transition:border-color .25s ease,transform .25s ease,color .25s ease;
+  }
+  .theme-toggle:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .theme-toggle:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  .theme-toggle svg{width:20px;height:20px}
+  .theme-toggle .icon-moon{display:none}
+  :root[data-theme="light"] .theme-toggle .icon-sun{display:none}
+  :root[data-theme="light"] .theme-toggle .icon-moon{display:block}
+
+  /* ---------- Shared section furniture ---------- */
+  .section{padding:92px 0}
+  .section.soft{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--accent-2);margin-bottom:16px;font-weight:500;
+  }
+  .section-head{
+    display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:end;margin-bottom:48px;
+  }
+  .section-head h2,.two-col h2,.web-split h2{font-size:clamp(30px,3.6vw,42px);font-weight:800}
+  .section-head>p{color:var(--ink-soft);font-size:17px;max-width:32em;justify-self:end}
+  .muted{color:var(--ink-soft)}
+  .body-copy{color:var(--ink-soft);font-size:17px}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;padding:92px 0 84px;overflow:hidden}
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);
+    background-size:58px 58px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 75%);
+            mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 30%,transparent 75%);
+  }
+  .hero::after{
+    content:"";position:absolute;width:580px;height:580px;top:-220px;right:-140px;border-radius:50%;
+    filter:blur(90px);opacity:.45;pointer-events:none;
+    background:radial-gradient(circle at 35% 35%,#f4b860,#c65a1c 55%,transparent 72%);
+    animation:drift-a 17s ease-in-out infinite alternate;
+  }
+  @keyframes drift-a{from{transform:translate(0,0) scale(1)}to{transform:translate(-70px,46px) scale(1.14)}}
+  @media (prefers-reduced-motion:reduce){.hero::after{animation:none}}
+  .hero-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:56px;align-items:center}
+  .hero-copy .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    background:var(--glass);border:1px solid var(--line);border-radius:999px;
+    padding:7px 15px;margin-bottom:24px;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .hero h1{font-size:clamp(40px,5.4vw,64px);font-weight:900;margin-bottom:22px}
+  .hero h1 span{
+    background:linear-gradient(115deg,var(--accent-2) 10%,var(--accent) 55%,var(--accent-deep) 95%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero-lead{font-size:19.5px;color:var(--ink-soft);max-width:34em;margin-bottom:32px}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px}
+  .btn{
+    display:inline-block;text-decoration:none;font-weight:600;font-size:15.5px;
+    padding:14px 26px;border-radius:10px;border:1px solid transparent;cursor:pointer;
+    font-family:inherit;
+    transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease,background .25s ease;
+  }
+  .btn.primary{background:var(--grad);color:#17110a;font-weight:700;box-shadow:0 8px 26px rgba(224,127,63,.3)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:var(--glow)}
+  .btn.secondary{
+    background:var(--glass);color:var(--ink);border-color:var(--line-strong);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .btn.secondary:hover{transform:translateY(-2px);border-color:var(--accent);color:#fff}
+  :root[data-theme="light"] .btn.secondary:hover{color:var(--ink)}
+  .btn.full{width:100%;text-align:center}
+  .hero-trust{display:flex;gap:22px;flex-wrap:wrap;color:var(--ink-soft);font-size:14.5px;font-weight:500}
+  .hero-trust span::first-letter{color:var(--ok)}
+
+  /* ---------- Hero proof card: browser mock + mini stats ---------- */
+  .web-proof-card{position:relative;justify-self:end;width:min(440px,100%)}
+  .proof-glow{
+    position:absolute;inset:8% -6% -4% 12%;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none;
+    background:radial-gradient(circle at 60% 35%,#e07f3f,#7a2f08 60%,transparent 75%);
+  }
+  :root[data-theme="light"] .proof-glow{opacity:.32}
+  .browser-mock{
+    position:relative;border-radius:16px;overflow:hidden;
+    border:1px solid var(--line-strong);
+    background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.02));
+    box-shadow:var(--shadow);
+    transform:rotate(1.2deg);
+    transition:transform .4s cubic-bezier(.16,.8,.26,1);
+  }
+  .web-proof-card:hover .browser-mock{transform:rotate(0deg) translateY(-4px)}
+  .browser-top{
+    display:flex;gap:7px;align-items:center;padding:12px 16px;
+    border-bottom:1px solid var(--line);background:var(--glass);
+  }
+  .browser-top i{width:11px;height:11px;border-radius:50%;background:var(--line-strong)}
+  .browser-top i:first-child{background:var(--accent)}
+  .browser-body{padding:26px 26px 30px}
+  .mock-kicker{width:34%;height:9px;border-radius:5px;background:rgba(255,255,255,.22);margin-bottom:16px}
+  .mock-title{width:92%;height:22px;border-radius:6px;background:rgba(255,255,255,.22);margin-bottom:10px}
+  .mock-title.short{width:64%}
+  .mock-copy{width:88%;height:11px;border-radius:5px;background:rgba(255,255,255,.22);margin-top:18px}
+  .mock-copy.short{width:58%;margin-top:9px}
+  .mock-btn{width:118px;height:34px;border-radius:8px;background:var(--grad);margin-top:24px;box-shadow:0 8px 22px rgba(224,127,63,.3)}
+  .web-mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+  .web-mini-stats>div{
+    background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    transition:border-color .25s ease,transform .25s ease;
+  }
+  .web-mini-stats>div:hover{border-color:rgba(244,184,96,.5);transform:translateY(-2px)}
+  .web-mini-stats strong{display:block;font-size:15.5px;font-weight:800;line-height:1.3}
+  .web-mini-stats span{display:block;font-size:12.5px;color:var(--ink-faint);margin-top:3px}
+
+  /* ---------- Service cards ---------- */
+  .cards{display:grid;gap:18px}
+  .service-grid{grid-template-columns:repeat(3,1fr)}
+  .card{
+    position:relative;overflow:hidden;
+    background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    border:1px solid var(--line);border-radius:var(--radius);padding:28px 26px 24px;
+    transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;
+  }
+  .card:hover{transform:translateY(-4px);border-color:rgba(244,184,96,.45);box-shadow:0 22px 44px rgba(0,0,0,.42)}
+  .card .ghost-num{
+    position:absolute;top:2px;right:16px;font-size:76px;font-weight:900;letter-spacing:-.04em;
+    color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.08);line-height:1;pointer-events:none;
+  }
+  .card .num{
+    position:absolute;top:26px;right:26px;font-family:"IBM Plex Mono",monospace;
+    font-size:12px;color:var(--ink-faint);letter-spacing:.1em;
+  }
+  .card h3{font-size:19.5px;font-weight:800;margin-bottom:10px;padding-right:34px}
+  .card p{color:var(--ink-soft);font-size:15.5px}
+  .card-foot{border-top:1px solid var(--line);margin-top:18px;padding-top:14px;font-size:13.5px;color:var(--ink-soft)}
+
+  /* ---------- Split layouts / features ---------- */
+  .web-split{display:grid;grid-template-columns:.92fr 1.08fr;gap:52px;align-items:start}
+  .feature-list{display:grid;gap:14px}
+  .feature-item{
+    display:flex;gap:18px;align-items:flex-start;
+    background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;
+    transition:transform .3s ease,border-color .3s ease;
+  }
+  .feature-item:hover{transform:translateY(-3px);border-color:rgba(244,184,96,.45)}
+  .feature-item>span{
+    font-size:22px;font-weight:900;letter-spacing:-.02em;line-height:1.2;flex:none;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .feature-item h3{font-size:17px;font-weight:800;margin-bottom:5px}
+  .feature-item p{color:var(--ink-soft);font-size:14.5px}
+
+  /* ---------- Technology / proof panel ---------- */
+  .tool-row{display:flex;flex-wrap:wrap;gap:9px}
+  .tool-row span{
+    font-weight:700;font-size:15px;color:var(--ink);
+    background:rgba(255,255,255,.05);border:1px solid var(--line-strong);border-radius:10px;padding:8px 15px;
+    transition:border-color .25s ease,transform .25s ease;
+  }
+  .tool-row span:hover{border-color:rgba(244,184,96,.55);transform:translateY(-1px)}
+  .proof-panel{
+    background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    border:1px solid var(--line);border-radius:18px;padding:30px;
+  }
+  .proof-panel h2{font-size:clamp(24px,2.8vw,32px);font-weight:800;margin-bottom:14px}
+  .proof-panel>p{color:var(--ink-soft);font-size:15.5px}
+  .proof-points{display:grid;gap:12px;margin-top:22px}
+  .proof-point{
+    background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  }
+  .proof-point strong{display:block;font-size:15.5px;font-weight:800;margin-bottom:3px}
+  .proof-point span{color:var(--ink-soft);font-size:14px}
+  .proof-credit{margin-top:20px;color:var(--ink-faint);font-size:14px}
+  .proof-credit a{font-weight:700;text-decoration:none}
+  .proof-credit a:hover{text-decoration:underline}
+
+  /* ---------- Process ---------- */
+  .process-band{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .process-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+  .process-step{
+    background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    border:1px solid var(--line);border-radius:var(--radius);padding:24px 20px;
+    transition:transform .3s ease,border-color .3s ease;
+  }
+  .process-step:hover{transform:translateY(-4px);border-color:rgba(244,184,96,.45)}
+  .process-step span{
+    display:block;font-size:30px;font-weight:900;letter-spacing:-.02em;margin-bottom:12px;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .process-step h3{font-size:16.5px;font-weight:800;margin-bottom:8px}
+  .process-step p{color:var(--ink-soft);font-size:14px}
+
+  /* ---------- FAQ ---------- */
+  .faq-wrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;align-items:start}
+  .faq-wrap h2{font-size:clamp(28px,3.4vw,38px);font-weight:800;margin-bottom:14px}
+  .faq-list{display:grid;gap:12px}
+  .faq-list details{
+    background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:4px 22px;
+    transition:border-color .3s ease;
+  }
+  .faq-list details[open]{border-color:rgba(244,184,96,.45)}
+  .faq-list summary{
+    cursor:pointer;font-weight:700;font-size:16.5px;padding:16px 26px 16px 0;position:relative;list-style:none;
+  }
+  .faq-list summary::-webkit-details-marker{display:none}
+  .faq-list summary::after{
+    content:"+";position:absolute;right:2px;top:50%;transform:translateY(-50%);
+    font-size:22px;font-weight:400;color:var(--accent-2);transition:transform .3s ease;
+  }
+  .faq-list details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+  .faq-list details p{color:var(--ink-soft);padding:0 0 18px;font-size:15.5px}
+
+  /* ---------- Contact ---------- */
+  .dark-contact{
+    position:relative;overflow:hidden;
+    background:linear-gradient(160deg,#0d1b26,#08131c 60%,#070c11);
+    border-top:1px solid var(--line);
+  }
+  .dark-contact::before{
+    content:"";position:absolute;width:520px;height:520px;top:-240px;left:-140px;border-radius:50%;
+    filter:blur(100px);opacity:.32;pointer-events:none;
+    background:radial-gradient(circle,#e07f3f,transparent 70%);
+  }
+  .sample-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:start}
+  .sample-grid h2{font-size:clamp(28px,3.4vw,38px);font-weight:800;margin-bottom:16px}
+  .sample-grid>div>p{color:var(--ink-soft);font-size:17px}
+  .sample-grid>div>p strong{color:#fff}
+  .contact-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+  .contact-links a{
+    text-decoration:none;font-weight:700;font-size:15px;color:var(--ink);
+    background:var(--glass-strong);border:1px solid var(--line-strong);border-radius:10px;padding:12px 22px;
+    transition:border-color .25s ease,transform .25s ease,color .25s ease;
+  }
+  .contact-links a:hover{border-color:var(--accent);transform:translateY(-2px);color:#fff}
+  .brief-form{
+    background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+    border:1px solid var(--line-strong);border-radius:18px;padding:30px;
+    box-shadow:var(--shadow);display:grid;gap:16px;
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  }
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .brief-form label{display:grid;gap:7px;font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+  .brief-form input,.brief-form select,.brief-form textarea{
+    background:rgba(7,12,17,.65);border:1px solid var(--line-strong);border-radius:9px;
+    padding:12px 14px;color:var(--ink);font:inherit;font-size:15px;width:100%;
+    transition:border-color .25s ease,box-shadow .25s ease;
+  }
+  .brief-form select option{background:#0e1620;color:#f4f7f9}
+  :root[data-theme="light"] .brief-form select option{background:#ffffff;color:#181410}
+  :root[data-theme="light"] .dark-contact .brief-form select option{background:#0e1620;color:#f4f7f9}
+  .brief-form input::placeholder,.brief-form textarea::placeholder{color:var(--ink-faint)}
+  .brief-form input:focus,.brief-form select:focus,.brief-form textarea:focus{
+    outline:none;border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(224,127,63,.22);
+  }
+  .brief-form textarea{resize:vertical}
+  .form-note{color:var(--ink-faint);font-size:12.5px;text-align:center}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);background:var(--bg-2);padding:42px 0}
+  .footer-grid{
+    display:grid;grid-template-columns:1.2fr 1fr auto;gap:26px;align-items:start;
+    color:var(--ink-faint);font-size:14.5px;
+  }
+  .footer-grid strong{color:var(--ink);font-size:17px;display:block;margin-bottom:4px}
+  .footer-grid a{color:var(--accent-strong);text-decoration:none}
+  .footer-grid a:hover{text-decoration:underline}
+  .footer-grid span{display:block}
+  .footer-grid p{margin:0}
+
+  /* ---------- Responsive ---------- */
+  @media (max-width:1020px){
+    .process-grid{grid-template-columns:repeat(3,1fr)}
+    .service-grid{grid-template-columns:repeat(2,1fr)}
+  }
+  @media (max-width:860px){
+    .section{padding:68px 0}
+    .hero{padding:64px 0 60px}
+    .hero::after{width:340px;height:340px;top:-150px;right:-130px;opacity:.26}
+    .hero-grid{grid-template-columns:1fr;gap:64px}
+    .web-proof-card{justify-self:center}
+    .section-head{grid-template-columns:1fr;align-items:start}
+    .section-head>p{justify-self:start}
+    .web-split,.faq-wrap,.sample-grid{grid-template-columns:1fr;gap:34px}
+    .footer-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    .service-grid,.process-grid,.case-details,.field-row{grid-template-columns:1fr}
+    .hero-actions .btn{width:100%;text-align:center}
+    .nav{gap:14px}
+    .nav .back-link{display:none}
+    .nav .nav-cta{padding:9px 14px;font-size:14px}
+    .brand{font-size:16px}
+    .web-mini-stats{grid-template-columns:1fr}
+    .brief-form{padding:22px}
+    .proof-panel{padding:24px}
+  }
+</style>
 </head>
-<body class="web-page">
-<header class="site-header"><div class="container nav-wrap"><a class="brand" href="index.html" aria-label="Moudud Karim home"><img src="assets/mk-logo.svg" width="36" height="36" alt="MK logo"><b>Moudud Karim</b></a><nav class="nav"><a class="back-link" href="index.html">← Back to Portfolio</a><a class="nav-cta" href="#project-inquiry">Discuss Your Website</a></nav></div></header>
-<main>
-<section class="web-hero"><div class="container web-hero-grid"><div><p class="eyebrow">WEB DESIGN & DEVELOPMENT</p><h1>Modern websites built to <span>look credible and work smoothly.</span></h1><p class="hero-lead">Responsive websites and frontend experiences for businesses, service companies, portfolios, landing pages, and web products—built around clear requirements, usability, and modern development practices.</p><div class="hero-actions"><a class="btn primary" href="#project-inquiry">Discuss Your Website</a><a class="btn secondary" href="#services-web">Explore Services</a></div><div class="hero-trust"><span>✓ Responsive Design</span><span>✓ Modern Frontend</span><span>✓ Clear Project Scope</span></div></div><div class="web-proof-card"><div class="browser-mock"><div class="browser-top"><i></i><i></i><i></i></div><div class="browser-body"><div class="mock-kicker"></div><div class="mock-title"></div><div class="mock-title short"></div><div class="mock-copy"></div><div class="mock-copy short"></div><div class="mock-btn"></div></div></div><div class="web-mini-stats"><div><strong>React / Next.js</strong><span>Modern frontend</span></div><div><strong>Responsive</strong><span>Desktop to mobile</span></div><div><strong>WordPress</strong><span>Website experience</span></div></div></div></div></section>
-<section class="section soft" id="services-web"><div class="container"><div class="section-head"><div><p class="eyebrow">WEBSITE SERVICES</p><h2>From business websites to modern frontend builds</h2></div><p>Choose a focused website build or discuss a custom requirement. Scope is defined around your business, content, functionality, and technical needs.</p></div><div class="web-service-grid">
-<article class="web-service"><span>01</span><h3>Business Websites</h3><p>Professional, responsive websites that clearly present your company, services, credibility, and contact path.</p><small>Service businesses • Agencies • B2B companies</small></article>
-<article class="web-service"><span>02</span><h3>Landing Pages</h3><p>Focused pages for a campaign, offer, lead-generation initiative, or product with clear conversion paths.</p><small>Campaigns • Offers • Lead capture</small></article>
-<article class="web-service"><span>03</span><h3>Portfolio Websites</h3><p>Clean personal or professional portfolio sites designed to showcase experience, services, and selected work.</p><small>Professionals • Freelancers • Creators</small></article>
-<article class="web-service"><span>04</span><h3>React / Next.js Development</h3><p>Modern frontend development for websites and web applications using component-based, production-oriented workflows.</p><small>React • Next.js • TypeScript • Tailwind CSS</small></article>
-<article class="web-service"><span>05</span><h3>WordPress & Website Redesign</h3><p>Responsive WordPress website work and redesigns that improve structure, presentation, and frontend experience.</p><small>WordPress • HTML • CSS • JavaScript</small></article>
-<article class="web-service"><span>06</span><h3>API & Frontend Integration</h3><p>Frontend implementation that connects interfaces with REST APIs and supports real product workflows.</p><small>REST APIs • State management • Forms</small></article>
-<article class="web-service"><span>07</span><h3>Custom Software Development</h3><p>Custom software solutions planned around specific business requirements, workflows, and product goals.</p><small>Custom requirements • Web applications • Scalable solutions</small></article>
-<article class="web-service"><span>08</span><h3>Frontend Development</h3><p>Responsive, interactive user interfaces for websites and web applications using modern frontend technologies.</p><small>React • Next.js • TypeScript • Tailwind CSS</small></article>
-<article class="web-service"><span>09</span><h3>Backend Development</h3><p>Backend development can be discussed as part of a custom project based on the required functionality, integrations, and technical scope.</p><small>Custom scope • APIs • Server-side requirements</small></article>
-<article class="web-service"><span>10</span><h3>Full-Stack Development</h3><p>End-to-end web application development can be scoped around the frontend, backend, data flow, and integration requirements of the project.</p><small>Frontend + Backend • Web applications • Integrations</small></article><article class="web-service"><span>11</span><h3>TypeScript</h3><p>Type-safe JavaScript development for maintainable, scalable, and reliable modern web applications.</p><small>Type safety • Modern JavaScript • Maintainable code</small></article><article class="web-service"><span>12</span><h3>Node.js</h3><p>Server-side JavaScript development for APIs, application logic, integrations, and custom web application requirements.</p><small>Server-side JavaScript • APIs • Integrations</small></article><article class="web-service"><span>13</span><h3>PostgreSQL</h3><p>Relational database solutions for structured application data, reliable storage, and backend-driven web projects.</p><small>Relational data • Structured storage • Database integration</small></article><article class="web-service"><span>14</span><h3>MongoDB</h3><p>Document-based database solutions for flexible application data and suitable custom web application requirements.</p><small>Document database • Flexible data • Application integration</small></article>
-</div></div></section>
-<section class="section"><div class="container web-split"><div><p class="eyebrow">WHAT YOU GET</p><h2 style="font:800 clamp(32px,4vw,50px)/1.08 Manrope;margin:0;letter-spacing:-.04em">A website built around real business requirements.</h2><p class="body-copy" style="font-size:16px;margin-top:22px">The goal is not only visual design. The build should be responsive, maintainable, clear to navigate, and aligned with the actions you want visitors to take.</p></div><div class="feature-list"><div class="feature-item"><span>01</span><div><h3>Responsive UI</h3><p>Layouts designed to work cleanly across desktop, tablet, and mobile screens.</p></div></div><div class="feature-item"><span>02</span><div><h3>Clear Information Architecture</h3><p>Pages and sections organized around your services, audience, and conversion goals.</p></div></div><div class="feature-item"><span>03</span><div><h3>Modern Frontend Implementation</h3><p>Development using suitable modern tools and reusable component patterns where the project calls for them.</p></div></div><div class="feature-item"><span>04</span><div><h3>Forms & Integrations</h3><p>Contact flows and frontend integrations planned around the actual project requirements.</p></div></div><div class="feature-item"><span>05</span><div><h3>Testing & Quality Focus</h3><p>Attention to frontend behavior, responsive states, and implementation quality before handoff.</p></div></div></div></div></section>
-<section class="section soft"><div class="container web-split"><div><p class="eyebrow">TECHNOLOGY</p><h2 style="font:800 clamp(32px,4vw,50px)/1.08 Manrope;margin:0 0 25px;letter-spacing:-.04em">A practical modern frontend stack</h2><div class="stack-grid"><span>React.js</span><span>Next.js</span><span>TypeScript</span><span>JavaScript</span><span>HTML5</span><span>CSS3</span><span>Tailwind CSS</span><span>Redux</span><span>RTK Query</span><span>TanStack Query</span><span>React Hook Form</span><span>Zod</span><span>REST APIs</span><span>WordPress</span><span>Jest</span><span>Playwright</span></div></div><div class="proof-panel"><p class="eyebrow">DEVELOPMENT CAPABILITY</p><h2>Backed by production frontend engineering experience.</h2><p>Technical delivery is supported by documented frontend engineering experience across production Next.js/React applications, SaaS products, API integrations, testing, and responsive website development.</p><div class="proof-points"><div class="proof-point"><strong>Production SaaS Development</strong><span>React, Next.js, TypeScript, Redux / RTK Query and Tailwind CSS experience.</span></div><div class="proof-point"><strong>Website & WordPress Experience</strong><span>Responsive website development plus WordPress plugin and website customization experience.</span></div><div class="proof-point"><strong>Product Project: freeResume</strong><span>ATS-friendly resume builder with live preview, PDF export and in-browser ATS diagnostics.</span></div></div><div class="proof-credit">Technical development profile: Hasib Talukder · <a href="https://hasibmuhammad.vercel.app/" target="_blank" rel="noopener">View developer portfolio ↗</a></div></div></div></section>
-<section class="section"><div class="container"><div class="section-head"><div><p class="eyebrow">PROCESS</p><h2>A clear path from idea to launch</h2></div><p>Every project can vary, but the workflow starts with requirements and moves through structure, implementation, review, and handoff.</p></div><div class="web-process"><div><span>01</span><h3>Requirements</h3><p>Understand the business, audience, pages, features, references, and goals.</p></div><div><span>02</span><h3>Scope & Structure</h3><p>Define the page structure, content needs, functionality, and technical approach.</p></div><div><span>03</span><h3>Design & Build</h3><p>Create the responsive interface and implement the agreed website experience.</p></div><div><span>04</span><h3>Review & Testing</h3><p>Review feedback, responsive behavior, interactions, and key frontend flows.</p></div><div><span>05</span><h3>Handoff / Launch</h3><p>Prepare the approved build for deployment or project handoff.</p></div></div></div></section>
-<section class="section soft"><div class="container faq-wrap"><div><p class="eyebrow">FAQ</p><h2>Before we start</h2><p class="muted">A few common questions about website projects.</p></div><div class="faq-list"><details><summary>What type of websites can you help with?</summary><p>Business websites, landing pages, portfolios, responsive WordPress sites, frontend builds, redesigns, and React/Next.js projects can be discussed based on scope.</p></details><details><summary>Can you work from an existing design or reference?</summary><p>Yes. Share your existing site, design file, examples, or reference websites in the project inquiry so the requirements can be reviewed.</p></details><details><summary>Can you redesign an existing website?</summary><p>Yes. A redesign can focus on layout, responsiveness, frontend presentation, and clearer user flows depending on the existing platform and scope.</p></details><details><summary>Do you handle custom web application features?</summary><p>Frontend application work and REST API integration can be discussed. The exact feasibility, stack, backend dependency, and scope should be confirmed before the project begins.</p></details><details><summary>How do I get a quote?</summary><p>Send your website type, estimated pages, budget range, current website if applicable, and project details using the form below.</p></details></div></div></section>
-<section class="section web-contact" id="project-inquiry"><div class="container web-contact-grid"><div><p class="eyebrow">START A WEBSITE PROJECT</p><h2>Tell me what you want to build.</h2><p>Share the basics of your website project. Submitting the form will open your email app with the project details prepared for <strong style="color:#fff">ahmed.moududcd@gmail.com</strong>.</p><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a></div></div><form class="web-form" id="webProjectForm"><div class="field-row"><label>Name<input name="name" required placeholder="Your name"></label><label>Email<input name="email" type="email" required placeholder="you@company.com"></label></div><div class="field-row"><label>Company / Business<input name="company" placeholder="Company name"></label><label>Current Website<input name="website" type="url" placeholder="https://..."></label></div><div class="field-row"><label>Website Type<select name="type" required><option value="">Select one</option><option>Business Website</option><option>Landing Page</option><option>Portfolio Website</option><option>Website Redesign</option><option>WordPress Website</option><option>React / Next.js Project</option><option>Custom / Other</option></select></label><label>Estimated Pages<select name="pages"><option>Not sure yet</option><option>1 page</option><option>2–5 pages</option><option>6–10 pages</option><option>10+ pages</option></select></label></div><label>Budget Range<select name="budget"><option>Not decided yet</option><option>Under $300</option><option>$300–$700</option><option>$700–$1,500</option><option>$1,500+</option></select></label><label>Project Details<textarea name="details" rows="6" required placeholder="Tell me about the website, features, references, timeline, or anything important..."></textarea></label><button class="btn primary full" type="submit">Send Project Inquiry</button><small class="form-note">No backend required — your email app opens with the details pre-filled.</small></form></div></section>
-</main>
-<footer><div class="container footer-grid"><div><strong>Moudud Karim</strong><span>B2B Lead Generation & Digital Services</span></div><p>Web Design & Development</p><a href="index.html">Back to Portfolio ↑</a></div></footer>
-<script>
-document.getElementById('webProjectForm').addEventListener('submit',function(e){e.preventDefault();const f=new FormData(this);const subject='Website Project Inquiry - '+(f.get('name')||'New Client');const body=[`Name: ${f.get('name')||''}`,`Email: ${f.get('email')||''}`,`Company / Business: ${f.get('company')||''}`,`Current Website: ${f.get('website')||''}`,`Website Type: ${f.get('type')||''}`,`Estimated Pages: ${f.get('pages')||''}`,`Budget Range: ${f.get('budget')||''}`,'', 'Project Details:',f.get('details')||''].join('\n');window.location.href='mailto:ahmed.moududcd@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body)});
-</script>
-</body></html>
+<body>
+  <header class="site-header">
+    <div class="container nav-wrap">
+      <a class="brand" href="https://moudud-ahmed.github.io/moudud-karim-portfolio/" aria-label="Moudud Karim home"><img class="brand-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwYjE3MmEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTYzYzc4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjMwIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTI3IDg3VjQxaDEwbDE3IDI0IDE3LTI0aDEwdjQ2SDY5VjYwTDU0IDgxIDM5IDYwdjI3SDI3WiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik04MyA0MWgxMnYxOGwxNS0xOGgxNWwtMTkgMjIgMjAgMjRoLTE1TDk1IDY4djE5SDgzVjQxWiIgZmlsbD0iIzZlYTBmZiIvPgo8L3N2Zz4K" alt="MK logo" />Moudud Karim</a>
+      <nav class="nav" aria-label="Primary navigation">
+        <a class="back-link" href="https://moudud-ahmed.github.io/moudud-karim-portfolio/">← Back to Portfolio</a>
+        <a class="nav-cta" href="#project-inquiry">Discuss Your Website</a>
+      </nav>
+      <div class="header-actions">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light mode" aria-pressed="false" title="Toggle dark / light mode"><svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">WEB DESIGN &amp; DEVELOPMENT</p>
+          <h1>Modern websites built to <span>look credible and work smoothly.</span></h1>
+          <p class="hero-lead">Responsive websites and frontend experiences for businesses, service companies, portfolios, landing pages, and web products—built around clear requirements, usability, and modern development practices.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#project-inquiry">Discuss Your Website</a>
+            <a class="btn secondary" href="#services-web">Explore Services</a>
+          </div>
+          <div class="hero-trust"><span>✓ Responsive Design</span><span>✓ Modern Frontend</span><span>✓ Clear Project Scope</span></div>
+        </div>
+        <div class="web-proof-card">
+          <div class="proof-glow"></div>
+          <div class="browser-mock" aria-hidden="true">
+            <div class="browser-top"><i></i><i></i><i></i></div>
+            <div class="browser-body"><div class="mock-kicker"></div><div class="mock-title"></div><div class="mock-title short"></div><div class="mock-copy"></div><div class="mock-copy short"></div><div class="mock-btn"></div></div>
+          </div>
+          <div class="web-mini-stats">
+            <div><strong>React / Next.js</strong><span>Modern frontend</span></div>
+            <div><strong>Responsive</strong><span>Desktop to mobile</span></div>
+            <div><strong>WordPress</strong><span>Website experience</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="services-web">
+      <div class="container">
+        <div class="section-head reveal"><div><p class="eyebrow">WEBSITE SERVICES</p><h2>From business websites to modern frontend builds</h2></div><p>Choose a focused website build or discuss a custom requirement. Scope is defined around your business, content, functionality, and technical needs.</p></div>
+        <div class="cards service-grid">
+          <article class="card reveal"><span class="ghost-num">01</span><span class="num">01</span><h3>Business Websites</h3><p>Professional, responsive websites that clearly present your company, services, credibility, and contact path.</p><div class="card-foot">Service businesses • Agencies • B2B companies</div></article>
+          <article class="card reveal"><span class="ghost-num">02</span><span class="num">02</span><h3>Landing Pages</h3><p>Focused pages for a campaign, offer, lead-generation initiative, or product with clear conversion paths.</p><div class="card-foot">Campaigns • Offers • Lead capture</div></article>
+          <article class="card reveal"><span class="ghost-num">03</span><span class="num">03</span><h3>Portfolio Websites</h3><p>Clean personal or professional portfolio sites designed to showcase experience, services, and selected work.</p><div class="card-foot">Professionals • Freelancers • Creators</div></article>
+          <article class="card reveal"><span class="ghost-num">04</span><span class="num">04</span><h3>React / Next.js Development</h3><p>Modern frontend development for websites and web applications using component-based, production-oriented workflows.</p><div class="card-foot">React • Next.js • TypeScript • Tailwind CSS</div></article>
+          <article class="card reveal"><span class="ghost-num">05</span><span class="num">05</span><h3>WordPress &amp; Website Redesign</h3><p>Responsive WordPress website work and redesigns that improve structure, presentation, and frontend experience.</p><div class="card-foot">WordPress • HTML • CSS • JavaScript</div></article>
+          <article class="card reveal"><span class="ghost-num">06</span><span class="num">06</span><h3>API &amp; Frontend Integration</h3><p>Frontend implementation that connects interfaces with REST APIs and supports real product workflows.</p><div class="card-foot">REST APIs • State management • Forms</div></article>
+          <article class="card reveal"><span class="ghost-num">07</span><span class="num">07</span><h3>Custom Software Development</h3><p>Custom software solutions planned around specific business requirements, workflows, and product goals.</p><div class="card-foot">Custom requirements • Web applications • Scalable solutions</div></article>
+          <article class="card reveal"><span class="ghost-num">08</span><span class="num">08</span><h3>Frontend Development</h3><p>Responsive, interactive user interfaces for websites and web applications using modern frontend technologies.</p><div class="card-foot">React • Next.js • TypeScript • Tailwind CSS</div></article>
+          <article class="card reveal"><span class="ghost-num">09</span><span class="num">09</span><h3>Backend Development</h3><p>Backend development can be discussed as part of a custom project based on the required functionality, integrations, and technical scope.</p><div class="card-foot">Custom scope • APIs • Server-side requirements</div></article>
+          <article class="card reveal"><span class="ghost-num">10</span><span class="num">10</span><h3>Full-Stack Development</h3><p>End-to-end web application development can be scoped around the frontend, backend, data flow, and integration requirements of the project.</p><div class="card-foot">Frontend + Backend • Web applications • Integrations</div></article>
+          <article class="card reveal"><span class="ghost-num">11</span><span class="num">11</span><h3>TypeScript</h3><p>Type-safe JavaScript development for maintainable, scalable, and reliable modern web applications.</p><div class="card-foot">Type safety • Modern JavaScript • Maintainable code</div></article>
+          <article class="card reveal"><span class="ghost-num">12</span><span class="num">12</span><h3>Node.js</h3><p>Server-side JavaScript development for APIs, application logic, integrations, and custom web application requirements.</p><div class="card-foot">Server-side JavaScript • APIs • Integrations</div></article>
+          <article class="card reveal"><span class="ghost-num">13</span><span class="num">13</span><h3>PostgreSQL</h3><p>Relational database solutions for structured application data, reliable storage, and backend-driven web projects.</p><div class="card-foot">Relational data • Structured storage • Database integration</div></article>
+          <article class="card reveal"><span class="ghost-num">14</span><span class="num">14</span><h3>MongoDB</h3><p>Document-based database solutions for flexible application data and suitable custom web application requirements.</p><div class="card-foot">Document database • Flexible data • Application integration</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container web-split">
+        <div class="reveal">
+          <p class="eyebrow">WHAT YOU GET</p>
+          <h2>A website built around real business requirements.</h2>
+          <p class="body-copy" style="margin-top:22px">The goal is not only visual design. The build should be responsive, maintainable, clear to navigate, and aligned with the actions you want visitors to take.</p>
+        </div>
+        <div class="feature-list">
+          <div class="feature-item reveal"><span>01</span><div><h3>Responsive UI</h3><p>Layouts designed to work cleanly across desktop, tablet, and mobile screens.</p></div></div>
+          <div class="feature-item reveal"><span>02</span><div><h3>Clear Information Architecture</h3><p>Pages and sections organized around your services, audience, and conversion goals.</p></div></div>
+          <div class="feature-item reveal"><span>03</span><div><h3>Modern Frontend Implementation</h3><p>Development using suitable modern tools and reusable component patterns where the project calls for them.</p></div></div>
+          <div class="feature-item reveal"><span>04</span><div><h3>Forms &amp; Integrations</h3><p>Contact flows and frontend integrations planned around the actual project requirements.</p></div></div>
+          <div class="feature-item reveal"><span>05</span><div><h3>Testing &amp; Quality Focus</h3><p>Attention to frontend behavior, responsive states, and implementation quality before handoff.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft">
+      <div class="container web-split">
+        <div class="reveal">
+          <p class="eyebrow">TECHNOLOGY</p>
+          <h2 style="margin-bottom:25px">A practical modern frontend stack</h2>
+          <div class="tool-row"><span>React.js</span><span>Next.js</span><span>TypeScript</span><span>JavaScript</span><span>HTML5</span><span>CSS3</span><span>Tailwind CSS</span><span>Redux</span><span>RTK Query</span><span>TanStack Query</span><span>React Hook Form</span><span>Zod</span><span>REST APIs</span><span>WordPress</span><span>Jest</span><span>Playwright</span></div>
+        </div>
+        <div class="proof-panel reveal">
+          <p class="eyebrow">DEVELOPMENT CAPABILITY</p>
+          <h2>Backed by production frontend engineering experience.</h2>
+          <p>Technical delivery is supported by documented frontend engineering experience across production Next.js/React applications, SaaS products, API integrations, testing, and responsive website development.</p>
+          <div class="proof-points">
+            <div class="proof-point"><strong>Production SaaS Development</strong><span>React, Next.js, TypeScript, Redux / RTK Query and Tailwind CSS experience.</span></div>
+            <div class="proof-point"><strong>Website &amp; WordPress Experience</strong><span>Responsive website development plus WordPress plugin and website customization experience.</span></div>
+            <div class="proof-point"><strong>Product Project: freeResume</strong><span>ATS-friendly resume builder with live preview, PDF export and in-browser ATS diagnostics.</span></div>
+          </div>
+          <div class="proof-credit">Technical development profile: Hasib Talukder · <a href="https://hasibmuhammad.vercel.app/" target="_blank" rel="noopener">View developer portfolio ↗</a></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section process-band">
+      <div class="container">
+        <div class="section-head reveal"><div><p class="eyebrow">PROCESS</p><h2>A clear path from idea to launch</h2></div><p>Every project can vary, but the workflow starts with requirements and moves through structure, implementation, review, and handoff.</p></div>
+        <div class="process-grid">
+          <div class="process-step reveal"><span>01</span><h3>Requirements</h3><p>Understand the business, audience, pages, features, references, and goals.</p></div>
+          <div class="process-step reveal"><span>02</span><h3>Scope &amp; Structure</h3><p>Define the page structure, content needs, functionality, and technical approach.</p></div>
+          <div class="process-step reveal"><span>03</span><h3>Design &amp; Build</h3><p>Create the responsive interface and implement the agreed website experience.</p></div>
+          <div class="process-step reveal"><span>04</span><h3>Review &amp; Testing</h3><p>Review feedback, responsive behavior, interactions, and key frontend flows.</p></div>
+          <div class="process-step reveal"><span>05</span><h3>Handoff / Launch</h3><p>Prepare the approved build for deployment or project handoff.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section soft" id="faq">
+      <div class="container faq-wrap">
+        <div class="reveal"><p class="eyebrow">FAQ</p><h2>Before we start</h2><p class="muted">A few common questions about website projects.</p></div>
+        <div class="faq-list reveal">
+          <details><summary>What type of websites can you help with?</summary><p>Business websites, landing pages, portfolios, responsive WordPress sites, frontend builds, redesigns, and React/Next.js projects can be discussed based on scope.</p></details>
+          <details><summary>Can you work from an existing design or reference?</summary><p>Yes. Share your existing site, design file, examples, or reference websites in the project inquiry so the requirements can be reviewed.</p></details>
+          <details><summary>Can you redesign an existing website?</summary><p>Yes. A redesign can focus on layout, responsiveness, frontend presentation, and clearer user flows depending on the existing platform and scope.</p></details>
+          <details><summary>Do you handle custom web application features?</summary><p>Frontend application work and REST API integration can be discussed. The exact feasibility, stack, backend dependency, and scope should be confirmed before the project begins.</p></details>
+          <details><summary>How do I get a quote?</summary><p>Send your website type, estimated pages, budget range, current website if applicable, and project details using the form below.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark-contact" id="project-inquiry">
+      <div class="container sample-grid">
+        <div class="reveal">
+          <p class="eyebrow">START A WEBSITE PROJECT</p>
+          <h2>Tell me what you want to build.</h2>
+          <p>Share the basics of your website project. Submitting the form will open your email app with the project details prepared for <strong>ahmed.moududcd@gmail.com</strong>.</p>
+          <div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a></div>
+        </div>
+        <form class="brief-form reveal" id="webProjectForm">
+          <div class="field-row"><label>Name<input name="name" required placeholder="Your name"></label><label>Email<input name="email" type="email" required placeholder="you@company.com"></label></div>
+          <div class="field-row"><label>Company / Business<input name="company" placeholder="Company name"></label><label>Current Website<input name="website" type="url" placeholder="https://..."></label></div>
+          <div class="field-row"><label>Website Type<select name="type" required><option value="">Select one</option><option>Business Website</option><option>Landing Page</option><option>Portfolio Website</option><option>Website Redesign</option><option>WordPress Website</option><option>React / Next.js Project</option><option>Custom / Other</option></select></label><label>Estimated Pages<select name="pages"><option>Not sure yet</option><option>1 page</option><option>2–5 pages</option><option>6–10 pages</option><option>10+ pages</option></select></label></div>
+          <label>Budget Range<select name="budget"><option>Not decided yet</option><option>Under $300</option><option>$300–$700</option><option>$700–$1,500</option><option>$1,500+</option></select></label>
+          <label>Project Details<textarea name="details" rows="6" required placeholder="Tell me about the website, features, references, timeline, or anything important..."></textarea></label>
+          <button class="btn primary full" type="submit">Send Project Inquiry</button>
+          <small class="form-note">No backend required — your email app opens with the details pre-filled.</small>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div><strong>Moudud Karim</strong><span>B2B Lead Generation &amp; Digital Services</span></div>
+      <p>Web Design &amp; Development</p>
+      <a href="https://moudud-ahmed.github.io/moudud-karim-portfolio/">Back to Portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script>
+  // Dark / light theme toggle — instant switch; choice saved best-effort in localStorage (default: dark).
+  const themeToggle = document.getElementById('themeToggle');
+  const syncThemeToggle = () => {
+    if (!themeToggle) return;
+    const light = document.documentElement.getAttribute('data-theme') === 'light';
+    themeToggle.setAttribute('aria-label', light ? 'Switch to dark mode' : 'Switch to light mode');
+    themeToggle.setAttribute('aria-pressed', light ? 'true' : 'false');
+  };
+  if (themeToggle) {
+    syncThemeToggle();
+    themeToggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('mk-theme', next); } catch (e) { /* storage unavailable (e.g. private window) — theme still switches for this visit */ }
+      syncThemeToggle();
+    });
+  }
+
+  // Header shadow on scroll
+  const header = document.querySelector('.site-header');
+  window.addEventListener('scroll', () => {
+    if (header) header.classList.toggle('scrolled', window.scrollY > 12);
+  }, { passive: true });
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const ro = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); ro.unobserve(entry.target); }
+    }), { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+    revealEls.forEach(el => ro.observe(el));
+    // Safety net: never leave content hidden if the observer misses an element.
+    setTimeout(() => revealEls.forEach(el => el.classList.add('in')), 3000);
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
+
+  // Project inquiry form — opens the visitor's email app with the project details pre-filled.
+  document.getElementById('webProjectForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const f = new FormData(this);
+    const subject = 'Website Project Inquiry - ' + (f.get('name') || 'New Client');
+    const body = [
+      'Name: ' + (f.get('name') || ''),
+      'Email: ' + (f.get('email') || ''),
+      'Company / Business: ' + (f.get('company') || ''),
+      'Current Website: ' + (f.get('website') || ''),
+      'Website Type: ' + (f.get('type') || ''),
+      'Estimated Pages: ' + (f.get('pages') || ''),
+      'Budget Range: ' + (f.get('budget') || ''),
+      '',
+      'Project Details:',
+      f.get('details') || ''
+    ].join('\n');
+    window.location.href = 'mailto:ahmed.moududcd@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  });
+  </script>
+</body>
+</html>
