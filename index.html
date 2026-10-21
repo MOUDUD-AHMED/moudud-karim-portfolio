@@ -5,8 +5,16 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="dark light" />
   <script>
-    // Apply the visitor's saved theme before first paint (best-effort: private/incognito windows may not persist it). Default theme is dark.
-    (function(){try{var t=localStorage.getItem('mk-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+    // Theme before first paint: a saved choice wins; with no saved choice, follow the
+    // visitor's system dark/light setting (prefers-color-scheme), dark as the fallback.
+    (function(){
+      var systemLight = false;
+      try { systemLight = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches); } catch (e) {}
+      var saved = null;
+      try { saved = localStorage.getItem('mk-theme'); } catch (e) {}
+      if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+      else if (systemLight) document.documentElement.setAttribute('data-theme', 'light');
+    })();
   </script>
   <meta name="description" content="Moudud Karim is a B2B Lead Generation Expert and Prospect List Building Specialist helping businesses build targeted prospect lists with verified decision-maker data." />
   <meta name="keywords" content="B2B Lead Generation Expert, Prospect List Building, LinkedIn Lead Generation, Verified B2B Email List, Data Enrichment Services" />
@@ -94,7 +102,7 @@
     --ink:#f4f7f9;--ink-soft:#a9b7c0;--ink-faint:#8fa3af;
     --line:rgba(255,255,255,.1);--line-strong:rgba(255,255,255,.18);
     --glass:rgba(255,255,255,.05);--glass-strong:rgba(255,255,255,.08);
-    --accent-2:#f4b860;--shadow:0 24px 60px rgba(0,0,0,.5);
+    --accent-2:#f4b860;--shadow:0 24px 60px rgba(0,0,0,.5);--ok:#5cc98d;
     color:#f4f7f9;
   }
   *{box-sizing:border-box}
@@ -441,12 +449,21 @@
     transition:transform .65s cubic-bezier(.16,.8,.26,1);
   }
   .carousel-track .case{
-    flex:0 0 100%;min-width:0;height:auto;
+    flex:0 0 100%;min-width:0;height:auto;padding:22px 26px;gap:26px;
     visibility:hidden;transition:border-color .3s ease,box-shadow .3s ease,visibility 0s linear .65s;
   }
   .carousel-track .case.is-active{visibility:visible;transition:border-color .3s ease,box-shadow .3s ease,visibility 0s}
-  .carousel-track .case-top>strong{font-size:clamp(54px,7vw,84px)}
-  .carousel-controls{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:24px}
+  .carousel-track .case-top>strong{font-size:clamp(40px,5vw,60px)}
+  .carousel-track .case-top{margin-bottom:14px}
+  .carousel-track .case-top h3{font-size:21px}
+  .carousel-track .case-tag{margin-bottom:8px}
+  .carousel-track .case-details{gap:12px 22px;margin-bottom:16px}
+  .carousel-track .case-details p{font-size:14px;line-height:1.5}
+  @media (min-width:861px){
+    .carousel-track .case{grid-template-columns:1.3fr .7fr}
+    .carousel-track .case-details{grid-template-columns:repeat(3,1fr)}
+  }
+  .carousel-controls{display:flex;align-items:center;justify-content:center;gap:22px;margin-top:18px}
   .carousel-btn{
     display:inline-flex;align-items:center;justify-content:center;flex:none;
     width:48px;height:48px;border-radius:50%;cursor:pointer;
@@ -528,6 +545,12 @@
     transition:border-color .25s ease,transform .25s ease,color .25s ease;
   }
   .contact-links a:hover{border-color:var(--accent);transform:translateY(-2px);color:#fff}
+  .contact-status{margin-top:24px;display:grid;gap:9px}
+  .booking-line{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15.5px;color:var(--ink)}
+  .booking-dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--ok);animation:booking-pulse 2.4s ease-in-out infinite}
+  @keyframes booking-pulse{0%,100%{box-shadow:0 0 0 3px rgba(92,201,141,.22)}50%{box-shadow:0 0 0 7px rgba(92,201,141,.06)}}
+  @media (prefers-reduced-motion:reduce){.booking-dot{animation:none}}
+  .dhaka-clock{font-size:14px;color:var(--ink-soft)}
   .brief-form{
     background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
     border:1px solid var(--line-strong);border-radius:18px;padding:30px;
@@ -591,6 +614,128 @@
   .sample-modal-image-wrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
   .sample-modal-image-wrap img{display:block;width:100%;height:auto}
   .modal-privacy{color:var(--ink-faint);font-size:13px;margin-top:14px}
+
+  /* ---------- Raw vs Clean data demo ---------- */
+  .data-demo{
+    margin-top:26px;background:var(--glass);border:1px solid var(--line);
+    border-radius:var(--radius);padding:26px 28px;
+  }
+  .data-demo-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+  .data-demo-head h3{font-size:19px;font-weight:800;margin-bottom:6px}
+  .data-demo-head p{color:var(--ink-soft);font-size:14.5px;max-width:34em}
+  .demo-toggle{
+    display:inline-flex;gap:4px;flex:none;
+    background:var(--glass-strong);border:1px solid var(--line-strong);border-radius:999px;padding:4px;
+  }
+  .demo-toggle-btn{
+    border:1px solid transparent;background:transparent;color:var(--ink-soft);cursor:pointer;
+    font:inherit;font-size:13.5px;font-weight:700;padding:8px 18px;border-radius:999px;
+    transition:background .25s ease,color .25s ease;
+  }
+  .demo-toggle-btn:hover{color:var(--ink)}
+  .demo-toggle-btn.active{background:var(--grad);color:#17110a}
+  .demo-toggle-btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  .demo-table-wrap{overflow:hidden;border:1px solid var(--line);border-radius:12px}
+  .demo-table{width:100%;border-collapse:collapse;font-size:14px}
+  .demo-table th{
+    text-align:left;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--accent-2);font-weight:500;
+    background:var(--glass-strong);padding:11px 14px;
+  }
+  .demo-table td{padding:12px 14px;border-top:1px solid var(--line);color:var(--ink-faint);vertical-align:top}
+  .demo-table.is-clean td{color:var(--ink)}
+  .demo-status{
+    display:inline-block;padding:3px 11px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap;
+  }
+  .demo-status.bad{background:rgba(224,160,63,.13);color:#dfa03c;border:1px solid rgba(224,160,63,.38)}
+  .demo-status.good{background:rgba(92,201,141,.13);color:var(--ok);border:1px solid rgba(92,201,141,.38)}
+  .demo-caption{color:var(--ink-faint);font-size:13.5px;margin-top:14px}
+
+  /* ---------- Lead calculator ---------- */
+  .calc-panel{
+    background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:30px;
+    display:grid;gap:22px;
+  }
+  .calc-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .calc-fields label{display:grid;gap:7px;font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+  .calc-fields input,.calc-fields select{
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;
+    padding:12px 14px;color:var(--ink);font:inherit;font-size:15px;width:100%;
+    transition:border-color .25s ease,box-shadow .25s ease;
+  }
+  .calc-fields input:focus,.calc-fields select:focus{
+    outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(224,127,63,.22);
+  }
+  .calc-result{background:var(--accent-soft);border:1px solid rgba(224,127,63,.32);border-radius:12px;padding:20px 24px}
+  .calc-result-label{
+    display:block;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent-2);font-weight:500;margin-bottom:6px;
+  }
+  .calc-result strong{display:block;font-size:clamp(26px,3.2vw,36px);font-weight:900;letter-spacing:-.02em;line-height:1.15}
+  .calc-result p{color:var(--ink-soft);font-size:14.5px;margin-top:6px}
+  .calc-note{color:var(--ink-faint);font-size:13.5px}
+
+  /* ---------- Form status (Formspree) ---------- */
+  .form-status{
+    font-size:14px;font-weight:600;text-align:center;padding:11px 16px;border-radius:9px;
+    background:var(--glass-strong);border:1px solid var(--line-strong);color:var(--ink);
+  }
+  .form-status.ok{background:rgba(92,201,141,.14);border-color:rgba(92,201,141,.45);color:#7fe0a8}
+  .form-status.err{background:rgba(224,90,63,.13);border-color:rgba(224,90,63,.45);color:#f0927c}
+  .brief-form button[disabled]{opacity:.65;cursor:wait}
+
+  /* ---------- Floating WhatsApp button ---------- */
+  .wa-float{
+    position:fixed;right:22px;bottom:22px;z-index:70;
+    width:56px;height:56px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:#1fae54;color:#fff;text-decoration:none;
+    box-shadow:0 14px 32px rgba(0,0,0,.38),0 4px 14px rgba(31,174,84,.35);
+    transition:transform .25s ease,box-shadow .25s ease;
+  }
+  .wa-float:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 18px 38px rgba(0,0,0,.42),0 6px 18px rgba(31,174,84,.45)}
+  .wa-float:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px}
+  .wa-float svg{width:29px;height:29px}
+
+  /* ---------- Sticky mobile CTA bar ---------- */
+  .mobile-cta{display:none}
+  @media (max-width:860px){
+    .wa-float{right:16px;bottom:90px;width:50px;height:50px}
+    .wa-float svg{width:25px;height:25px}
+    .mobile-cta{
+      display:flex;align-items:center;justify-content:space-between;gap:14px;
+      position:fixed;left:12px;right:12px;bottom:12px;z-index:65;
+      background:rgba(11,18,25,.92);border:1px solid var(--line-strong);border-radius:14px;
+      padding:10px 10px 10px 18px;box-shadow:0 18px 44px rgba(0,0,0,.5);
+      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+      transform:translateY(160%);transition:transform .45s cubic-bezier(.16,.8,.26,1);
+    }
+    :root[data-theme="light"] .mobile-cta{background:rgba(255,255,255,.94);box-shadow:0 18px 44px rgba(60,35,10,.25)}
+    .mobile-cta.show{transform:none}
+    .mobile-cta span{font-weight:700;font-size:14.5px;color:var(--ink)}
+    .mobile-cta-btn{
+      flex:none;text-decoration:none;font-weight:700;font-size:14.5px;color:#17110a;
+      background:var(--grad);padding:11px 18px;border-radius:10px;box-shadow:0 6px 18px rgba(224,127,63,.3);
+    }
+    @media (prefers-reduced-motion:reduce){.mobile-cta{transition:none}}
+  }
+  @media (max-width:560px){
+    .calc-fields{grid-template-columns:1fr}
+    .calc-panel{padding:22px}
+    .data-demo{padding:20px}
+    .data-demo-head{align-items:flex-start;flex-direction:column}
+    .demo-table{table-layout:fixed}
+    .demo-table th:nth-child(1){width:23%}
+    .demo-table th:nth-child(2){width:19%}
+    .demo-table th:nth-child(3){width:15%}
+    .demo-table th:nth-child(4){width:27%}
+    .demo-table th:nth-child(5){width:16%}
+    .demo-table th,.demo-table td{padding:9px 8px;font-size:12px}
+    .demo-table th{font-size:10.5px;letter-spacing:.07em;padding:9px 6px}
+    .demo-table td{word-break:break-word}
+    .demo-table td:nth-child(4){word-break:break-all}
+    .demo-status{padding:2px 8px;font-size:11px;white-space:normal;text-align:center}
+  }
 
   /* ---------- Responsive ---------- */
   @media (max-width:1020px){
@@ -676,7 +821,7 @@
 
     <section class="proof-bar" aria-label="Experience highlights">
       <div class="container proof-grid">
-        <div><strong class="counter" data-target="7" data-suffix="+">1</strong><span>Years Experience</span></div>
+        <div><strong class="counter" data-target="7" data-suffix="+" data-years-since="2019-04-14">1</strong><span>Years Experience</span></div>
         <div><strong class="counter" data-target="100" data-suffix="+">1</strong><span>Clients Served</span></div>
         <div><strong>Global</strong><span>Market Research</span></div>
       </div>
@@ -788,10 +933,56 @@
     <section class="section soft" id="why">
       <div class="container"><div class="section-head reveal"><div><p class="eyebrow">WHY WORK WITH ME</p><h2>Focused on relevance, verification, and usable data</h2></div></div>
         <div class="why-grid"><div class="reveal"><span>01</span><h3>Custom Targeting</h3><p>Lists are researched around your campaign criteria instead of a generic one-size-fits-all audience.</p></div><div class="reveal"><span>02</span><h3>Multi-Source Research</h3><p>I use multiple relevant sources depending on the project and the information required.</p></div><div class="reveal"><span>03</span><h3>Email Verification</h3><p>Collected business emails are checked with dedicated verification tools before delivery.</p></div><div class="reveal"><span>04</span><h3>Custom Data Fields</h3><p>Lists can be structured around the fields your campaign actually needs.</p></div><div class="reveal"><span>05</span><h3>Clean Delivery</h3><p>Data is organized into a clear spreadsheet format that is easy to review and use.</p></div></div>
+        <div class="data-demo reveal">
+          <div class="data-demo-head">
+            <div><h3>Raw data in — clean, verified data out</h3><p>See what happens to a prospect list between raw collection and delivery. Toggle to compare the same three records.</p></div>
+            <div class="demo-toggle" role="group" aria-label="Compare raw and cleaned data">
+              <button class="demo-toggle-btn active" id="demoRawBtn" type="button" aria-pressed="true">Raw</button>
+              <button class="demo-toggle-btn" id="demoCleanBtn" type="button" aria-pressed="false">Clean &amp; Verified</button>
+            </div>
+          </div>
+          <div class="demo-table-wrap">
+            <table class="demo-table" id="demoTable">
+              <thead><tr><th>Company</th><th>Contact</th><th>Title</th><th>Email</th><th>Status</th></tr></thead>
+              <tbody id="demoBody">
+                <tr><td>acme hvac inc</td><td>john smith</td><td>owner</td><td>john@acmehvac.gmial.com</td><td><span class="demo-status bad">Unverified</span></td></tr>
+                <tr><td>BrightBuild llc</td><td>S. LEE</td><td>vp ops</td><td>s.lee@brightbuild</td><td><span class="demo-status bad">Incomplete</span></td></tr>
+                <tr><td>northgate plumbing co.</td><td>mike  r.</td><td>—</td><td>mike.r@northgateplumbing.com</td><td><span class="demo-status bad">Unverified</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="demo-caption" id="demoCaption">Raw data, as collected: inconsistent formatting, typos, missing fields, and emails that bounce.</p>
+        </div>
       </div>
     </section>
 
     <section class="section markets"><div class="container"><p class="eyebrow">INTERNATIONAL EXPERIENCE</p><h2>International prospect research experience</h2><p class="market-intro">Experience researching companies and decision-makers across key European markets based on specific industries, locations, and buyer profiles.</p><div class="market-row"><span>United Kingdom</span><span>Germany</span><span>France</span><span>Netherlands</span><span>Ireland</span><span>Switzerland</span><span>Belgium</span><span>Austria</span><span>Sweden</span><span>Denmark</span><span>Norway</span><span>Finland</span><span>Spain</span><span>Italy</span><span>Cyprus</span><span>Poland</span></div></div></section>
+
+    <section class="section" id="calculator">
+      <div class="container">
+        <div class="section-head reveal"><div><p class="eyebrow">LEAD CALCULATOR</p><h2>How long would your list take?</h2></div><p>Enter your target list size and industry to get a quick delivery estimate.</p></div>
+        <div class="calc-panel reveal">
+          <div class="calc-fields">
+            <label>Number of leads<input type="number" id="calcLeads" min="50" step="50" value="1000" inputmode="numeric"></label>
+            <label>Industry<select id="calcIndustry">
+              <option>HVAC &amp; Home Services</option>
+              <option>Construction &amp; Contractors</option>
+              <option>SaaS &amp; Technology</option>
+              <option>Agencies &amp; Marketing</option>
+              <option>Healthcare</option>
+              <option>Financial Services</option>
+              <option>Other B2B</option>
+            </select></label>
+          </div>
+          <div class="calc-result">
+            <span class="calc-result-label">Estimated delivery</span>
+            <strong id="calcOutput">5–8 business days</strong>
+            <p id="calcDetail">For 1,000 verified leads in HVAC &amp; Home Services — based on ~200 verified leads per day.</p>
+          </div>
+          <p class="calc-note">Final timeline confirmed after reviewing your targeting criteria.</p>
+        </div>
+      </div>
+    </section>
 
     <section class="section" id="faq">
       <div class="container faq-wrap"><div class="reveal"><p class="eyebrow">FAQ</p><h2>Common questions before a project</h2><p class="muted">Need something more specific? Send your targeting criteria and project requirements.</p></div><div class="faq-list reveal">
@@ -807,21 +998,24 @@
 
     <section class="section sample-section dark-contact" id="sample">
       <div class="container sample-grid">
-        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a></div></div>
-        <form class="brief-form reveal" id="briefForm">
+        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><p class="dhaka-clock mono">Bangladesh time: <span id="dhakaTime">—</span></p></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a></div></div>
+        <form class="brief-form reveal" id="briefForm" action="https://formspree.io/f/xbgdvznw" method="POST">
           <div class="field-row"><label>Name<input name="name" required placeholder="Your name"></label><label>Business Email<input name="email" type="email" placeholder="you@company.com"></label></div>
           <div class="field-row"><label>Target Industry<input name="industry" required placeholder="e.g. HVAC"></label><label>Target Location<input name="location" required placeholder="e.g. USA"></label></div>
           <label>Decision-Maker Titles<input name="titles" placeholder="e.g. Owner, Founder, CEO"></label>
           <label>Approx. Number of Leads<input name="quantity" placeholder="e.g. 1,000"></label>
           <label>Additional Requirements<textarea name="requirements" rows="4" placeholder="Company size, required fields, or other criteria"></textarea></label>
-          <button class="btn primary full" type="submit">Send Project Details</button>
-          <small class="form-note">This opens your email app with the project details pre-filled.</small>
+          <button class="btn primary full" type="submit" id="briefSubmit">Send Project Details</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite" hidden></p>
+          <small class="form-note">Submitting sends your project details directly to my inbox.</small>
         </form>
       </div>
     </section>
   </main>
 
   <footer><div class="container footer-grid"><div><strong>Moudud Karim</strong><p>B2B Lead Generation &amp; Prospect List Building Expert</p></div><div><a href="mailto:ahmed.moududcd@gmail.com">ahmed.moududcd@gmail.com</a><span>Jashore, Khulna, Bangladesh</span></div><p>© <span id="year"></span> Moudud Karim. All rights reserved.</p></div></footer>
+  <a class="wa-float" href="https://wa.me/8801305029637" target="_blank" rel="noopener" aria-label="Chat with Moudud Karim on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
+  <div class="mobile-cta" id="mobileCta"><span>Want a free sample list?</span><a class="mobile-cta-btn" href="#sample">Get a Free Sample</a></div>
   <div class="sample-modal" id="sampleModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="sampleModalTitle">
     <div class="sample-modal-backdrop" data-close-modal></div>
     <div class="sample-modal-panel" role="document">
@@ -833,6 +1027,24 @@
   <script>
   // Footer year
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // "Now booking" line — always names next month, so it rolls forward on its own each month.
+  const bookingText = document.getElementById('bookingText');
+  if (bookingText) {
+    const nextMonth = new Date();
+    nextMonth.setDate(1);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    bookingText.textContent = 'Now booking projects for ' + nextMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  }
+
+  // Live Bangladesh clock (Asia/Dhaka), refreshed every second.
+  const dhakaTime = document.getElementById('dhakaTime');
+  if (dhakaTime) {
+    const dhakaFormat = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true });
+    const tickDhakaClock = () => { dhakaTime.textContent = dhakaFormat.format(new Date()); };
+    tickDhakaClock();
+    setInterval(tickDhakaClock, 1000);
+  }
 
   // Mobile menu
   const menuBtn = document.querySelector('.menu-btn');
@@ -848,7 +1060,8 @@
     }));
   }
 
-  // Dark / light theme toggle — instant switch; choice saved best-effort in localStorage (default: dark).
+  // Dark / light theme toggle — instant switch; choice saved best-effort in localStorage and
+  // takes precedence over the system-setting default applied in the head script.
   const themeToggle = document.getElementById('themeToggle');
   const syncThemeToggle = () => {
     if (!themeToggle) return;
@@ -893,6 +1106,18 @@
     revealEls.forEach(el => ro.observe(el));
   } else {
     revealEls.forEach(el => el.classList.add('in'));
+  }
+
+  // Years Experience is dynamic: full years since April 14, 2019, so the value
+  // rises by 1 every April 14 (7+ until Apr 13 2027, 8+ from Apr 14 2027, ...).
+  const yearsCounter = document.querySelector('[data-years-since]');
+  if (yearsCounter) {
+    const startParts = yearsCounter.dataset.yearsSince.split('-').map(Number);
+    const now = new Date();
+    let fullYears = now.getFullYear() - startParts[0];
+    const anniversaryThisYear = new Date(now.getFullYear(), startParts[1] - 1, startParts[2]);
+    if (now < anniversaryThisYear) fullYears -= 1;
+    if (fullYears >= 0) yearsCounter.dataset.target = String(fullYears);
   }
 
   // Count-up stats: fast, smooth, and only once when the strip becomes visible.
@@ -1084,27 +1309,139 @@
     start();
   })();
 
-  // Brief form — opens the visitor's email app with the project details pre-filled.
+  // Brief form — real submission via Formspree (live endpoint in the form's action
+  // attribute); submissions are delivered to the site owner's inbox by Formspree.
   const briefForm = document.getElementById('briefForm');
   if (briefForm) {
-    briefForm.addEventListener('submit', (e) => {
+    const formStatus = document.getElementById('formStatus');
+    const briefSubmit = document.getElementById('briefSubmit');
+    const showFormStatus = (kind, msg) => {
+      if (!formStatus) return;
+      formStatus.hidden = false;
+      formStatus.className = 'form-status' + (kind ? ' ' + kind : '');
+      formStatus.textContent = msg;
+    };
+    briefForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const fd = new FormData(briefForm);
-      const get = (k) => (fd.get(k) || '').toString().trim();
-      const subject = 'Free sample request — ' + (get('industry') || 'B2B lead list');
-      const lines = [
-        'Name: ' + get('name'),
-        'Business Email: ' + get('email'),
-        'Target Industry: ' + get('industry'),
-        'Target Location: ' + get('location'),
-        'Decision-Maker Titles: ' + get('titles'),
-        'Approx. Number of Leads: ' + get('quantity'),
-        'Additional Requirements: ' + get('requirements')
-      ];
-      window.location.href = 'mailto:ahmed.moududcd@gmail.com?subject=' +
-        encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+      if (briefSubmit) { briefSubmit.disabled = true; briefSubmit.textContent = 'Sending…'; }
+      showFormStatus('', 'Sending your project details…');
+      try {
+        const res = await fetch(briefForm.action, {
+          method: 'POST',
+          body: new FormData(briefForm),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          briefForm.reset();
+          showFormStatus('ok', 'Thank you — your project details have been sent. I will get back to you by email.');
+        } else {
+          showFormStatus('err', 'Something went wrong and the form could not be sent. Please try again, or email me directly at ahmed.moududcd@gmail.com.');
+        }
+      } catch (err) {
+        showFormStatus('err', 'Something went wrong and the form could not be sent. Please try again, or email me directly at ahmed.moududcd@gmail.com.');
+      } finally {
+        if (briefSubmit) { briefSubmit.disabled = false; briefSubmit.textContent = 'Send Project Details'; }
+      }
     });
   }
+
+  // Raw vs Clean data demo — the same three records in both states; the toggle re-renders the rows.
+  (() => {
+    const demoBody = document.getElementById('demoBody');
+    const demoTable = document.getElementById('demoTable');
+    const demoCaption = document.getElementById('demoCaption');
+    const demoRawBtn = document.getElementById('demoRawBtn');
+    const demoCleanBtn = document.getElementById('demoCleanBtn');
+    if (!demoBody || !demoTable || !demoRawBtn || !demoCleanBtn) return;
+    const DEMO = {
+      raw: {
+        caption: 'Raw data, as collected: inconsistent formatting, typos, missing fields, and emails that bounce.',
+        rows: [
+          ['acme hvac inc', 'john smith', 'owner', 'john@acmehvac.gmial.com', 'Unverified'],
+          ['BrightBuild llc', 'S. LEE', 'vp ops', 's.lee@brightbuild', 'Incomplete'],
+          ['northgate plumbing co.', 'mike  r.', '—', 'mike.r@northgateplumbing.com', 'Unverified']
+        ]
+      },
+      clean: {
+        caption: 'The same records after research, enrichment, and verification — complete, consistent, and ready for outreach.',
+        rows: [
+          ['Acme HVAC Inc.', 'John Smith', 'Owner', 'john.smith@acmehvac.com', 'Verified'],
+          ['BrightBuild LLC', 'Sarah Lee', 'VP of Operations', 'sarah.lee@brightbuild.com', 'Verified'],
+          ['Northgate Plumbing Co.', 'Mike Reynolds', 'Operations Manager', 'mike.reynolds@northgateplumbing.com', 'Verified']
+        ]
+      }
+    };
+    const renderDemo = (mode) => {
+      const set = DEMO[mode];
+      demoBody.innerHTML = set.rows.map(r =>
+        '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] +
+        '</td><td><span class="demo-status ' + (mode === 'clean' ? 'good' : 'bad') + '">' +
+        (mode === 'clean' ? '✓ ' : '') + r[4] + '</span></td></tr>'
+      ).join('');
+      demoTable.classList.toggle('is-clean', mode === 'clean');
+      if (demoCaption) demoCaption.textContent = set.caption;
+      demoRawBtn.classList.toggle('active', mode === 'raw');
+      demoCleanBtn.classList.toggle('active', mode === 'clean');
+      demoRawBtn.setAttribute('aria-pressed', mode === 'raw' ? 'true' : 'false');
+      demoCleanBtn.setAttribute('aria-pressed', mode === 'clean' ? 'true' : 'false');
+    };
+    demoRawBtn.addEventListener('click', () => renderDemo('raw'));
+    demoCleanBtn.addEventListener('click', () => renderDemo('clean'));
+    renderDemo('raw');
+  })();
+
+  // Lead calculator — estimate at ~200 verified leads per day; the industry only names the estimate.
+  (() => {
+    const calcLeads = document.getElementById('calcLeads');
+    const calcIndustry = document.getElementById('calcIndustry');
+    const calcOutput = document.getElementById('calcOutput');
+    const calcDetail = document.getElementById('calcDetail');
+    if (!calcLeads || !calcOutput) return;
+    const updateCalc = () => {
+      const leads = parseInt(calcLeads.value, 10);
+      if (isNaN(leads) || leads < 1) {
+        calcOutput.textContent = '—';
+        if (calcDetail) calcDetail.textContent = 'Enter a list size to see the delivery estimate.';
+        return;
+      }
+      const low = Math.max(1, Math.ceil(leads / 200));
+      let high = Math.ceil((leads / 200) * 1.5);
+      if (high <= low) high = low + 1;
+      calcOutput.textContent = low + '–' + high + ' business days';
+      if (calcDetail) {
+        const industry = calcIndustry ? calcIndustry.value : '';
+        calcDetail.textContent = 'For ' + leads.toLocaleString('en-US') + ' verified leads' +
+          (industry ? ' in ' + industry : '') + ' — based on ~200 verified leads per day.';
+      }
+    };
+    calcLeads.addEventListener('input', updateCalc);
+    if (calcIndustry) calcIndustry.addEventListener('change', updateCalc);
+    updateCalc();
+  })();
+
+  // Sticky mobile CTA bar — appears once the hero is scrolled past; hides while the
+  // contact section or the footer is on screen so it never covers the real form.
+  (() => {
+    const ctaBar = document.getElementById('mobileCta');
+    if (!ctaBar) return;
+    const hero = document.querySelector('.hero');
+    const hideTargets = [document.getElementById('sample'), document.querySelector('footer')].filter(Boolean);
+    const visibleTargets = new Set();
+    const updateBar = () => {
+      const pastHero = hero ? (window.scrollY > hero.offsetTop + hero.offsetHeight - 80) : (window.scrollY > 600);
+      ctaBar.classList.toggle('show', pastHero && visibleTargets.size === 0);
+    };
+    if ('IntersectionObserver' in window) {
+      const barIO = new IntersectionObserver(entries => entries.forEach(en => {
+        if (en.isIntersecting) visibleTargets.add(en.target); else visibleTargets.delete(en.target);
+        updateBar();
+      }), { threshold: .06 });
+      hideTargets.forEach(t => barIO.observe(t));
+    }
+    window.addEventListener('scroll', updateBar, { passive: true });
+    window.addEventListener('resize', updateBar);
+    updateBar();
+  })();
   </script>
 </body>
 </html>
