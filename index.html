@@ -124,6 +124,14 @@
   ::selection{background:var(--accent);color:#14100b}
   section{scroll-margin-top:92px}
 
+  /* ---------- Desktop overall scale ---------- */
+  /* The whole desktop layout renders ~10% smaller — the look visitors
+     previously only got by zooming their browser out to 90% — without
+     them touching zoom. The mobile layout (≤860px) is not scaled. */
+  @media (min-width:861px){
+    :root{zoom:.9}
+  }
+
   /* ---------- Scroll reveal ---------- */
   .reveal{
     opacity:0;transform:translateY(28px);
@@ -246,7 +254,7 @@
   .hero-trust{display:flex;gap:22px;flex-wrap:wrap;color:var(--ink-soft);font-size:14.5px;font-weight:500}
   .hero-trust span::first-letter{color:var(--ok)}
 
-  .hero-card{position:relative;justify-self:end;width:min(360px,100%)}
+  .hero-card{position:relative;justify-self:end;width:min(280px,100%)}
   .portrait-glow{
     position:absolute;inset:8% -6% -4% 12%;border-radius:50%;filter:blur(70px);opacity:.5;pointer-events:none;
     background:radial-gradient(circle at 60% 35%,#e07f3f,#7a2f08 60%,transparent 75%);
@@ -261,8 +269,8 @@
   /* The portrait drifts gently up and down; the badges below run the same
      6s cycle in the opposite direction, and the hover zoom/brighten lives on
      the <img> so the float keeps running while the photo is hovered. */
-  @keyframes photo-float{from{transform:rotate(1.2deg) translateY(0)}to{transform:rotate(1.2deg) translateY(-10px)}}
-  @media (prefers-reduced-motion:reduce){.photo-shell{animation:none;transform:rotate(1.2deg)}}
+  @keyframes photo-float{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+  @media (prefers-reduced-motion:reduce){.photo-shell{animation:none}}
   .photo-shell img{display:block;width:100%;height:auto;transition:transform .6s cubic-bezier(.16,.8,.26,1),filter .6s ease}
   .hero-card:hover .photo-shell img{transform:scale(1.05);filter:brightness(1.09) saturate(1.06)}
   .photo-shell::after{
@@ -683,6 +691,7 @@
   .type-line{
     font-size:clamp(20px,2.1vw,25px);font-weight:800;letter-spacing:-.015em;
     line-height:1.3;margin:0 0 20px;min-height:1.3em;color:var(--ink);
+    white-space:nowrap;
   }
   .type-word{
     background:linear-gradient(115deg,var(--accent-2) 10%,var(--accent) 55%,var(--accent-deep) 95%);
@@ -694,12 +703,12 @@
   }
   @keyframes caret-blink{0%,55%{opacity:1}56%,100%{opacity:0}}
   @media (prefers-reduced-motion:reduce){.type-caret{animation:none}}
-  /* Phones: same 20px size as before, but the rotating word may wrap onto the
-     next line so long industries never run off the edge of the hero. */
+  /* Phones: 20px base size, still one single line — the typewriter script
+     shrinks the font as needed so even the longest industry fits without
+     wrapping or running off the edge of the hero. */
   @media (max-width:860px){
     .type-line{font-size:20px}
-    .type-word{white-space:normal}
-    .hero-card{width:min(320px,92%)}
+    .hero-card{width:min(240px,80%)}
   }
 
   /* ---------- Hero live lead-list ---------- */
@@ -1815,6 +1824,35 @@
     const el = document.getElementById('typewriter');
     if (!el) return;
     const WORDS = ['HVAC Companies', 'General Contractors', 'AEC Firms', 'Software & SaaS Companies', 'IT Services', 'Manufacturers', 'Healthcare Suppliers', 'Financial Services', 'Staffing Agencies', 'Logistics Companies', 'Wholesale Distributors', 'Commercial Real Estate', 'Marketing Agencies', 'Consulting Firms', 'Solar & Energy Companies'];
+    // Keep the whole line on ONE line at every width: measure the full line
+    // with the longest rotating word at the CSS base size, and shrink the
+    // font just enough that it fits the hero column — the line never wraps
+    // and never overflows. Re-runs on resize and once the webfont has loaded
+    // (canvas metrics only become exact after the font arrives).
+    const typeLine = el.parentElement;
+    const fitCtx = document.createElement('canvas').getContext('2d');
+    const fitTypeLine = () => {
+      if (!typeLine) return;
+      typeLine.style.fontSize = '';
+      const base = parseFloat(getComputedStyle(typeLine).fontSize) || 20;
+      const avail = typeLine.clientWidth;
+      if (!avail) return;
+      fitCtx.font = '800 ' + base + 'px "Libre Franklin", sans-serif';
+      let natural = 0;
+      WORDS.forEach(w => {
+        const width = fitCtx.measureText('Lead lists built for ' + w).width;
+        if (width > natural) natural = width;
+      });
+      natural += 9; // caret width + its margin, with a small safety buffer
+      if (natural > avail) typeLine.style.fontSize = (Math.floor(base * avail / natural * 10) / 10) + 'px';
+    };
+    fitTypeLine();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTypeLine);
+    let fitRaf = null;
+    window.addEventListener('resize', () => {
+      if (fitRaf) cancelAnimationFrame(fitRaf);
+      fitRaf = requestAnimationFrame(fitTypeLine);
+    });
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = WORDS[0]; return; }
     let wi = 0, ci = WORDS[0].length, deleting = true, timer = null;
     const tick = () => {
