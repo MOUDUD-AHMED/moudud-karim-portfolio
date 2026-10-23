@@ -93,7 +93,13 @@
     margin:0;background:var(--bg);color:var(--ink);
     font-family:"Libre Franklin",system-ui,-apple-system,"Segoe UI",sans-serif;
     font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
+    /* overflow-x:clip (hidden as the fallback) stops sideways scroll WITHOUT
+       creating a scroll container — overflow:hidden on an ancestor is the
+       classic silent killer of position:sticky/fixed descendants. The
+       padding-top reserves exactly the 68px the header takes: the header is
+       position:fixed (see .site-header), so it no longer sits in flow. */
+    overflow-x:hidden;overflow-x:clip;
+    padding-top:68px;
     transition:background-color .35s ease,color .35s ease;
   }
   h1,h2,h3{line-height:1.14;margin:0;letter-spacing:-.015em}
@@ -118,16 +124,24 @@
 
   /* ---------- Header / nav ---------- */
   .site-header{
-    position:sticky;top:0;z-index:60;
+    /* Fixed, not sticky — same as the main portfolio page: sticky is fragile
+       against ancestor overflow, while fixed pins the bar to the viewport on
+       desktop and mobile alike. The body's 68px padding-top keeps the page
+       layout exactly where it was, and the compact 68px → 52px shrink plus
+       the scrolled shadow keep working unchanged. */
+    position:fixed;top:0;left:0;right:0;z-index:60;
     background:rgba(7,12,17,.72);
     backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
     border-bottom:1px solid var(--line);
     transition:box-shadow .3s ease,background .3s ease;
   }
   .site-header.scrolled{background:rgba(7,12,17,.9);box-shadow:0 14px 40px rgba(0,0,0,.45)}
-  .nav-wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px}
+  .nav-wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px;transition:height .35s ease}
+  .site-header.is-compact .nav-wrap{height:52px}
   .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
-  .brand-logo{width:34px;height:34px;flex:none;border-radius:9px;padding:3px;background:#0d1a2e;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+  .brand-logo{width:34px;height:34px;flex:none;border-radius:9px;padding:3px;background:#0d1a2e;box-shadow:0 4px 14px rgba(0,0,0,.4);transition:width .35s ease,height .35s ease}
+  .site-header.is-compact .brand-logo{width:29px;height:29px}
+  @media (prefers-reduced-motion:reduce){.nav-wrap,.brand-logo{transition:none}}
   .nav{display:flex;gap:26px;align-items:center}
   .nav a{
     color:var(--ink-soft);text-decoration:none;font-size:15px;font-weight:500;position:relative;padding:4px 0;
@@ -157,6 +171,38 @@
   .theme-toggle .icon-moon{display:none}
   :root[data-theme="light"] .theme-toggle .icon-sun{display:none}
   :root[data-theme="light"] .theme-toggle .icon-moon{display:block}
+
+  /* ---------- Scroll progress bar ---------- */
+  .scroll-progress{
+    position:fixed;top:0;left:0;right:0;height:3px;z-index:95;pointer-events:none;
+    background:var(--grad);transform-origin:0 50%;transform:scaleX(0);
+  }
+
+  /* ---------- Scroll toggle with circular progress ring ----------
+     Always floating: one click smooth-scrolls to the very bottom, the next
+     click back to the very top. The arrow points down while there is page
+     below (click goes to the bottom) and flips up near the bottom (click
+     returns to the top). Same component as the main portfolio page; it sits
+     in the bottom-right corner, where this page has no other float. */
+  .to-top{
+    position:fixed;right:22px;bottom:22px;z-index:70;width:48px;height:48px;border-radius:50%;
+    display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;
+    background:rgba(14,22,32,.82);border:1px solid var(--line-strong);color:var(--ink);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 14px 32px rgba(0,0,0,.38);
+    transition:border-color .25s ease;
+  }
+  :root[data-theme="light"] .to-top{background:rgba(255,255,255,.88);box-shadow:0 14px 32px rgba(60,35,10,.2)}
+  .to-top:hover{border-color:var(--accent)}
+  .to-top:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px}
+  .to-top svg{width:44px;height:44px}
+  .to-top circle{fill:none;stroke-width:3}
+  .to-top .tt-track{stroke:var(--line-strong)}
+  .to-top .tt-ring{stroke:var(--accent-2);stroke-linecap:round}
+  .to-top .tt-arrow{stroke:var(--ink);transition:transform .45s ease}
+  .to-top .tt-arrow-down{transform:rotate(180deg);transform-origin:24px 24px}
+  @media (max-width:860px){.to-top{right:16px;bottom:16px;width:44px;height:44px}.to-top svg{width:40px;height:40px}}
+  @media (prefers-reduced-motion:reduce){.to-top{transition:none}.to-top .tt-arrow{transition:none}}
 
   /* ---------- Shared section furniture ---------- */
   .section{padding:92px 0}
@@ -449,6 +495,7 @@
 </style>
 </head>
 <body>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
     <div class="container nav-wrap">
       <a class="brand" href="https://moudud-ahmed.github.io/moudud-karim-portfolio/" aria-label="Moudud Karim home"><img class="brand-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwYjE3MmEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTYzYzc4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjMwIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTI3IDg3VjQxaDEwbDE3IDI0IDE3LTI0aDEwdjQ2SDY5VjYwTDU0IDgxIDM5IDYwdjI3SDI3WiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik04MyA0MWgxMnYxOGwxNS0xOGgxNWwtMTkgMjIgMjAgMjRoLTE1TDk1IDY4djE5SDgzVjQxWiIgZmlsbD0iIzZlYTBmZiIvPgo8L3N2Zz4K" alt="MK logo" />Moudud Karim</a>
@@ -605,6 +652,8 @@
     </div>
   </footer>
 
+  <button class="to-top" id="toTop" type="button" aria-label="Scroll to bottom"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tt-track" cx="24" cy="24" r="20"/><circle class="tt-ring" id="toTopRing" cx="24" cy="24" r="20" transform="rotate(-90 24 24)"/><path class="tt-arrow tt-arrow-down" id="toTopArrow" d="M24 30.5v-13M17.8 23.2L24 17l6.2 6.2" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
   <script>
   // Dark / light theme toggle — instant switch; choice saved best-effort in localStorage (default: dark).
   const themeToggle = document.getElementById('themeToggle');
@@ -624,11 +673,65 @@
     });
   }
 
-  // Header shadow on scroll
+  // Header shadow on scroll + compact shrink once past the threshold
+  // (the .nav-wrap height transitions smoothly between 68px and 52px).
   const header = document.querySelector('.site-header');
   window.addEventListener('scroll', () => {
-    if (header) header.classList.toggle('scrolled', window.scrollY > 12);
+    if (!header) return;
+    header.classList.toggle('scrolled', window.scrollY > 12);
+    header.classList.toggle('is-compact', window.scrollY > 140);
   }, { passive: true });
+
+  // Scroll progress bar (top of page), driven by an rAF-throttled scroll handler.
+  (() => {
+    const bar = document.getElementById('scrollProgress');
+    if (!bar) return;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const doc = document.documentElement;
+      const max = doc.scrollHeight - doc.clientHeight;
+      bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(1, Math.max(0, doc.scrollTop / max)) : 0) + ')';
+    };
+    const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request);
+    update();
+  })();
+
+  // Scroll toggle — a circular progress ring mirrors overall page progress.
+  // The button is always floating: while there is page below, the arrow
+  // points down and one click smooth-scrolls to the very bottom; near the
+  // bottom the arrow flips up and the next click returns to the very top.
+  (() => {
+    const btn = document.getElementById('toTop');
+    const ring = document.getElementById('toTopRing');
+    const arrow = document.getElementById('toTopArrow');
+    if (!btn) return;
+    const CIRC = 2 * Math.PI * 20;
+    if (ring) { ring.style.strokeDasharray = CIRC.toFixed(1); ring.style.strokeDashoffset = CIRC.toFixed(1); }
+    const doc = document.documentElement;
+    let atBottom = false;
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const max = doc.scrollHeight - doc.clientHeight;
+      const p = max > 0 ? Math.min(1, Math.max(0, doc.scrollTop / max)) : 0;
+      if (ring) ring.style.strokeDashoffset = (CIRC * (1 - p)).toFixed(1);
+      atBottom = max > 0 && doc.scrollTop >= max - 48;
+      if (arrow) arrow.classList.toggle('tt-arrow-down', !atBottom);
+      btn.setAttribute('aria-label', atBottom ? 'Back to top' : 'Scroll to bottom');
+    };
+    const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+    window.addEventListener('scroll', request, { passive: true });
+    window.addEventListener('resize', request);
+    update();
+    btn.addEventListener('click', () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const max = doc.scrollHeight - doc.clientHeight;
+      window.scrollTo({ top: atBottom ? 0 : max, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  })();
 
   // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
