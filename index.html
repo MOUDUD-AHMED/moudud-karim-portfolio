@@ -126,7 +126,13 @@
     margin:0;background:var(--bg);color:var(--ink);
     font-family:"Libre Franklin",system-ui,-apple-system,"Segoe UI",sans-serif;
     font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
+    /* overflow-x:clip (hidden as the fallback) stops sideways scroll WITHOUT
+       creating a scroll container — overflow:hidden on an ancestor is the
+       classic silent killer of position:sticky/fixed descendants. The
+       padding-top reserves exactly the 68px the header takes: the header is
+       position:fixed (see .site-header), so it no longer sits in flow. */
+    overflow-x:hidden;overflow-x:clip;
+    padding-top:68px;
   }
   body.modal-open{overflow:hidden}
   h1,h2,h3{line-height:1.14;margin:0;letter-spacing:-.015em}
@@ -160,7 +166,14 @@
 
   /* ---------- Header / nav ---------- */
   .site-header{
-    position:sticky;top:0;z-index:60;
+    /* Fixed, not sticky: on the live site the bar scrolled away with the
+       page (sticky is fragile against ancestor overflow and the Lenis
+       smooth-scroll setup). Fixed pins the bar to the viewport on desktop
+       and mobile alike; the body's 68px padding-top keeps the page layout
+       exactly where it was, and the compact 68px → 52px shrink, the
+       scrolled shadow, and scroll-spy (which reads the live header height)
+       all keep working unchanged. */
+    position:fixed;top:0;left:0;right:0;z-index:60;
     background:rgba(7,12,17,.72);
     backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);
     border-bottom:1px solid var(--line);
@@ -430,14 +443,17 @@
   .tool-chip:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
   .tool-chip::after{
     content:attr(data-tip);
-    position:absolute;left:50%;bottom:calc(100% + 9px);transform:translate(-50%,4px);z-index:5;
+    position:absolute;left:50%;bottom:calc(100% + 9px);transform:translate(-50%,4px);z-index:30;
     width:max-content;max-width:220px;white-space:normal;text-align:center;
-    font-weight:500;font-size:12.5px;line-height:1.45;color:var(--ink);
-    background:var(--glass-strong);border:1px solid rgba(244,184,96,.45);border-radius:9px;
-    padding:8px 11px;box-shadow:var(--shadow);
+    font-weight:600;font-size:13px;line-height:1.5;color:#f4f7f9;
+    /* Fully opaque solid background: the old translucent glass let the
+       kicker and heading text behind the tooltip show through and overlap
+       the tooltip's own lines, so the text could not be read. */
+    background:#1e2b3a;border:1px solid rgba(244,184,96,.65);border-radius:9px;
+    padding:9px 12px;box-shadow:0 16px 38px rgba(0,0,0,.65);
     opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;
   }
-  :root[data-theme="light"] .tool-chip::after{background:#fffdf9}
+  :root[data-theme="light"] .tool-chip::after{background:#fffdf9;color:#181410;box-shadow:0 16px 38px rgba(60,35,10,.28)}
   .tool-chip:hover::after,.tool-chip:focus-visible::after{opacity:1;transform:translate(-50%,0)}
   /* Edge chips anchor their tooltip to the panel edge so it never runs
      past the screen on narrow widths. */
@@ -734,12 +750,35 @@
   .fp-step.is-current{color:var(--accent-2)}
   .fp-bar{flex:1;height:4px;border-radius:99px;background:var(--line-strong);overflow:hidden}
   .fp-fill{display:block;height:100%;width:50%;background:var(--grad);border-radius:99px;transition:width .45s cubic-bezier(.16,.8,.26,1)}
+  #fpFill2{width:0}
   @media (prefers-reduced-motion:reduce){.fp-fill{transition:none}}
   .wizard-step-text{font-size:13px;font-weight:600;color:var(--ink-soft);margin-top:-6px}
   .form-step{display:grid;gap:16px}
   .form-step[hidden]{display:none}
   .wizard-nav{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:stretch}
   @media (max-width:860px){.form-step{gap:12px}}
+  /* Step 3 — review summary: the visitor checks everything they entered
+     (industry, location/country, titles, quantity, fields, contact details)
+     before the real Submit button sends the form. */
+  .summary-list{
+    display:grid;gap:0;margin:0;
+    background:var(--glass);border:1px solid var(--line);border-radius:12px;padding:6px 18px;
+  }
+  .summary-list>div{
+    display:flex;justify-content:space-between;align-items:baseline;gap:18px;
+    padding:10px 0;border-bottom:1px solid var(--line);
+  }
+  .summary-list>div:last-child{border-bottom:none}
+  .summary-list dt{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--accent-2);font-weight:500;flex:none;
+  }
+  .summary-list dd{margin:0;font-weight:600;font-size:15px;color:var(--ink);text-align:right;overflow-wrap:anywhere}
+  @media (max-width:560px){
+    .summary-list{padding:4px 14px}
+    .summary-list>div{flex-direction:column;gap:2px;padding:8px 0}
+    .summary-list dd{text-align:left;font-size:14.5px}
+  }
 
   /* ---------- Case study modal ---------- */
   .case-open-btn{
@@ -1009,6 +1048,57 @@
   .wa-float:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 18px 38px rgba(0,0,0,.42),0 6px 18px rgba(31,174,84,.45)}
   .wa-float:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px}
   .wa-float svg{width:29px;height:29px}
+
+  /* ---------- Floating contact widget ---------- */
+  /* Expandable shortcut stack in the bottom-right corner column, sitting
+     above the scroll toggle (bottom:94px + 48px tall) and the WhatsApp
+     float below it, so the three never overlap. The toggle opens labeled
+     shortcuts to the site's real contact routes: the contact/sample
+     section, the LinkedIn profile, and the email address. */
+  .contact-widget{
+    position:fixed;right:22px;bottom:162px;z-index:70;
+    display:flex;flex-direction:column;align-items:flex-end;gap:10px;
+  }
+  .cw-toggle{
+    width:48px;height:48px;border-radius:50%;cursor:pointer;padding:0;flex:none;
+    display:inline-flex;align-items:center;justify-content:center;
+    background:rgba(14,22,32,.88);border:1px solid var(--line-strong);color:var(--accent-2);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    box-shadow:0 14px 32px rgba(0,0,0,.38);
+    transition:border-color .25s ease,transform .25s ease;
+  }
+  :root[data-theme="light"] .cw-toggle{background:rgba(255,255,255,.92);box-shadow:0 14px 32px rgba(60,35,10,.2)}
+  .cw-toggle:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .cw-toggle:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px}
+  .cw-toggle svg{width:21px;height:21px}
+  .cw-links{
+    display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+    opacity:0;visibility:hidden;transform:translateY(8px);pointer-events:none;
+    transition:opacity .3s ease,transform .3s ease,visibility .3s ease;
+  }
+  .contact-widget.open .cw-links{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+  .cw-link{
+    display:inline-flex;align-items:center;gap:9px;text-decoration:none;
+    font-weight:700;font-size:14px;color:var(--ink);
+    background:rgba(14,22,32,.92);border:1px solid var(--line-strong);border-radius:999px;
+    padding:10px 17px 10px 13px;box-shadow:0 14px 32px rgba(0,0,0,.4);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    transition:border-color .25s ease,transform .25s ease;
+  }
+  :root[data-theme="light"] .cw-link{background:rgba(255,255,255,.95);box-shadow:0 14px 32px rgba(60,35,10,.2)}
+  .cw-link:hover{border-color:var(--accent);transform:translateY(-1px);color:var(--ink)}
+  .cw-link:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  .cw-link svg{width:18px;height:18px;color:var(--accent-2);flex:none}
+  @media (max-width:860px){
+    /* Mobile right column: sticky CTA bar at the bottom, WhatsApp float at
+       bottom:90px, scroll toggle at bottom:152px (44px tall, top edge 196px)
+       — the widget sits just above the toggle, compact 44px toggle. */
+    .contact-widget{right:16px;bottom:208px}
+    .cw-toggle{width:44px;height:44px}
+    .cw-toggle svg{width:19px;height:19px}
+    .cw-link{font-size:13.5px;padding:9px 15px 9px 12px}
+  }
+  @media (prefers-reduced-motion:reduce){.cw-toggle,.cw-links,.cw-link{transition:none}}
 
   /* ---------- Sticky mobile CTA bar ---------- */
   .mobile-cta{display:none}
@@ -2087,8 +2177,8 @@
       <div class="container sample-grid">
         <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><p class="dhaka-clock mono">Bangladesh time: <span id="dhakaTime">—</span></p></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><button class="copy-btn" type="button" data-copy="ahmed.moududcd@gmail.com" aria-label="Copy email address ahmed.moududcd@gmail.com">Copy email</button><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a><button class="copy-btn" type="button" data-copy="+8801305029637" aria-label="Copy WhatsApp number +8801305029637">Copy number</button></div></div>
         <form class="brief-form reveal" id="briefForm" action="https://formspree.io/f/xbgdvznw" method="POST">
-          <div class="form-progress" aria-hidden="true"><span class="fp-step is-current" id="fpStep1">STEP 1</span><span class="fp-bar"><span class="fp-fill" id="fpFill"></span></span><span class="fp-step" id="fpStep2">STEP 2</span></div>
-          <p class="wizard-step-text" id="wizardStepText" role="status">Step 1 of 2 — Project details</p>
+          <div class="form-progress" aria-hidden="true"><span class="fp-step is-current" id="fpStep1">STEP 1</span><span class="fp-bar"><span class="fp-fill" id="fpFill"></span></span><span class="fp-step" id="fpStep2">STEP 2</span><span class="fp-bar"><span class="fp-fill" id="fpFill2"></span></span><span class="fp-step" id="fpStep3">STEP 3</span></div>
+          <p class="wizard-step-text" id="wizardStepText" role="status">Step 1 of 3 — Project details</p>
           <div class="form-step" id="formStep1">
             <div class="field-row"><label>Target Industry<input name="industry" required placeholder="e.g. HVAC"></label><label>Target Location<input name="location" required placeholder="e.g. USA"></label></div>
             <label>Decision-Maker Titles<input name="titles" placeholder="e.g. Owner, Founder, CEO"></label>
@@ -2098,7 +2188,19 @@
           </div>
           <div class="form-step" id="formStep2" hidden>
             <div class="field-row"><label>Name<input name="name" required placeholder="Your name"></label><label>Business Email<input name="email" type="email" placeholder="you@company.com"></label></div>
-            <div class="wizard-nav"><button class="btn secondary" type="button" id="wizardBack">← Back</button><button class="btn primary" type="submit" id="briefSubmit">Send Project Details</button></div>
+            <div class="wizard-nav"><button class="btn secondary" type="button" id="wizardBack">← Back</button><button class="btn primary" type="button" id="wizardReview">Review — Check Details</button></div>
+          </div>
+          <div class="form-step" id="formStep3" hidden>
+            <dl class="summary-list">
+              <div><dt>Target Industry</dt><dd id="sumIndustry">—</dd></div>
+              <div><dt>Target Location (Country)</dt><dd id="sumLocation">—</dd></div>
+              <div><dt>Decision-Maker Titles</dt><dd id="sumTitles">—</dd></div>
+              <div><dt>Approx. Number of Leads</dt><dd id="sumQuantity">—</dd></div>
+              <div><dt>Additional Requirements (Fields)</dt><dd id="sumRequirements">—</dd></div>
+              <div><dt>Your Name</dt><dd id="sumName">—</dd></div>
+              <div><dt>Business Email</dt><dd id="sumEmail">—</dd></div>
+            </dl>
+            <div class="wizard-nav"><button class="btn secondary" type="button" id="wizardBack2">← Back</button><button class="btn primary" type="submit" id="briefSubmit">Send Project Details</button></div>
           </div>
           <p class="form-status" id="formStatus" role="status" aria-live="polite" hidden></p>
           <small class="form-note">Submitting sends your project details directly to my inbox.</small>
@@ -2110,6 +2212,14 @@
   <footer><div class="container footer-grid"><div><strong>Moudud Karim</strong><p>B2B Lead Generation &amp; Prospect List Building Expert</p><span class="signature" id="signatureName" aria-hidden="true">Moudud Karim</span></div><div><a href="mailto:ahmed.moududcd@gmail.com">ahmed.moududcd@gmail.com</a><span>Jashore, Khulna, Bangladesh</span></div><p>© <span id="year"></span> Moudud Karim. All rights reserved.</p></div><div class="footer-giant" aria-hidden="true">MOUDUD KARIM</div></footer>
   <button class="to-top" id="toTop" type="button" aria-label="Scroll to bottom"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tt-track" cx="24" cy="24" r="20"/><circle class="tt-ring" id="toTopRing" cx="24" cy="24" r="20" transform="rotate(-90 24 24)"/><path class="tt-arrow tt-arrow-down" id="toTopArrow" d="M24 30.5v-13M17.8 23.2L24 17l6.2 6.2" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <a class="wa-float" href="https://wa.me/8801305029637" target="_blank" rel="noopener" aria-label="Chat with Moudud Karim on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
+  <div class="contact-widget" id="contactWidget">
+    <div class="cw-links" id="cwLinks">
+      <a class="cw-link" href="#sample"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Contact</a>
+      <a class="cw-link" href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.119 20.452H3.554V9h3.565v11.452z"/></svg>LinkedIn</a>
+      <a class="cw-link" href="mailto:ahmed.moududcd@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5L12 13l8.5-6.5"/></svg>Email</a>
+    </div>
+    <button class="cw-toggle" id="cwToggle" type="button" aria-expanded="false" aria-controls="cwLinks" aria-label="Open contact shortcuts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+  </div>
   <div class="mobile-cta" id="mobileCta"><span>Want a free sample list?</span><a class="mobile-cta-btn" href="#sample">Get a Free Sample</a></div>
   <div class="sample-modal" id="sampleModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="sampleModalTitle">
     <div class="sample-modal-backdrop" data-close-modal></div>
@@ -2754,42 +2864,75 @@
     });
   }
 
-  // Brief form wizard — two steps over the same form and the same Formspree
-  // endpoint: step 1 collects the project fields, step 2 the contact fields.
-  // Next validates step 1 with the browser's own field validation before
-  // moving on; the submit handler above still sends everything at once.
+  // Brief form wizard — three steps over the same form and the same Formspree
+  // endpoint: step 1 collects the project fields, step 2 the contact fields,
+  // and step 3 is a review summary — the visitor checks everything they
+  // entered (industry, location/country, titles, quantity, fields and their
+  // contact details) before the real Submit button sends it all at once.
+  // Each move forward validates the current step with the browser's own
+  // field validation; the submit handler above still sends everything.
   (() => {
     const form = document.getElementById('briefForm');
     if (!form) return;
     const step1 = document.getElementById('formStep1');
     const step2 = document.getElementById('formStep2');
+    const step3 = document.getElementById('formStep3');
     const nextBtn = document.getElementById('wizardNext');
     const backBtn = document.getElementById('wizardBack');
+    const reviewBtn = document.getElementById('wizardReview');
+    const backBtn2 = document.getElementById('wizardBack2');
     const fill = document.getElementById('fpFill');
+    const fill2 = document.getElementById('fpFill2');
     const fp1 = document.getElementById('fpStep1');
     const fp2 = document.getElementById('fpStep2');
+    const fp3 = document.getElementById('fpStep3');
     const stepText = document.getElementById('wizardStepText');
-    if (!step1 || !step2 || !nextBtn || !backBtn) return;
+    if (!step1 || !step2 || !step3 || !nextBtn || !backBtn || !reviewBtn || !backBtn2) return;
+    const stepLabels = { 1: 'Step 1 of 3 — Project details', 2: 'Step 2 of 3 — Your details', 3: 'Step 3 of 3 — Review & confirm' };
     const goToStep = (n) => {
-      const second = n === 2;
-      step1.hidden = second;
-      step2.hidden = !second;
-      if (fill) fill.style.width = second ? '100%' : '50%';
-      if (fp1) fp1.classList.toggle('is-current', !second);
-      if (fp2) fp2.classList.toggle('is-current', second);
-      if (stepText) stepText.textContent = second ? 'Step 2 of 2 — Your details' : 'Step 1 of 2 — Project details';
-      const first = (second ? step2 : step1).querySelector('input, textarea');
+      step1.hidden = n !== 1;
+      step2.hidden = n !== 2;
+      step3.hidden = n !== 3;
+      if (fill) fill.style.width = n >= 2 ? '100%' : '50%';
+      if (fill2) fill2.style.width = n >= 3 ? '100%' : (n === 2 ? '50%' : '0%');
+      if (fp1) fp1.classList.toggle('is-current', n === 1);
+      if (fp2) fp2.classList.toggle('is-current', n === 2);
+      if (fp3) fp3.classList.toggle('is-current', n === 3);
+      if (stepText) stepText.textContent = stepLabels[n];
+      const current = n === 1 ? step1 : (n === 2 ? step2 : step3);
+      const first = current.querySelector('input, textarea, button');
       if (first) first.focus({ preventScroll: true });
     };
-    nextBtn.addEventListener('click', () => {
-      const fields = step1.querySelectorAll('input, textarea');
-      for (const f of fields) { if (!f.checkValidity()) { f.reportValidity(); return; } }
-      goToStep(2);
-    });
+    const validStep = (step) => {
+      const fields = step.querySelectorAll('input, textarea');
+      for (const f of fields) { if (!f.checkValidity()) { f.reportValidity(); return false; } }
+      return true;
+    };
+    const fillSummary = () => {
+      const val = (name) => {
+        const f = form.querySelector('[name="' + name + '"]');
+        const v = f ? f.value.trim() : '';
+        return v || '—';
+      };
+      const set = (id, name) => { const el = document.getElementById(id); if (el) el.textContent = val(name); };
+      set('sumIndustry', 'industry');
+      set('sumLocation', 'location');
+      set('sumTitles', 'titles');
+      set('sumQuantity', 'quantity');
+      set('sumRequirements', 'requirements');
+      set('sumName', 'name');
+      set('sumEmail', 'email');
+    };
+    nextBtn.addEventListener('click', () => { if (validStep(step1)) goToStep(2); });
+    reviewBtn.addEventListener('click', () => { if (!validStep(step2)) return; fillSummary(); goToStep(3); });
     backBtn.addEventListener('click', () => goToStep(1));
-    // Enter inside a step-1 field means "Next", not an early submit.
+    backBtn2.addEventListener('click', () => goToStep(2));
+    // Enter inside a step-1/step-2 field means "continue", not an early submit.
     step1.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') { e.preventDefault(); nextBtn.click(); }
+    });
+    step2.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); reviewBtn.click(); }
     });
     // After a successful send (the submit handler marks the status "ok" and
     // resets the fields), return the wizard to step 1.
@@ -2797,6 +2940,27 @@
     if (status && 'MutationObserver' in window) {
       new MutationObserver(() => { if (status.classList.contains('ok')) goToStep(1); }).observe(status, { attributes: true, attributeFilter: ['class'] });
     }
+  })();
+
+  // Floating contact widget — the toggle opens Contact / LinkedIn / Email
+  // shortcuts (the site's real contact routes). Closes on a second tap, on
+  // Escape, on any outside click, and after a shortcut is chosen.
+  (() => {
+    const widget = document.getElementById('contactWidget');
+    const toggle = document.getElementById('cwToggle');
+    if (!widget || !toggle) return;
+    const setOpen = (open) => {
+      widget.classList.toggle('open', open);
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', open ? 'Close contact shortcuts' : 'Open contact shortcuts');
+    };
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setOpen(!widget.classList.contains('open'));
+    });
+    widget.querySelectorAll('.cw-link').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('click', (e) => { if (!widget.contains(e.target)) setOpen(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
   })();
 
   // Raw vs Clean data demo — drag comparison slider: raw on the left, clean &
