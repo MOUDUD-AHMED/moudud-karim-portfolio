@@ -175,9 +175,25 @@
   .nav-wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:68px;transition:height .35s ease}
   .site-header.is-compact .nav-wrap{height:52px}
   .brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
-  .brand-logo{width:34px;height:34px;border-radius:9px;box-shadow:0 4px 14px rgba(0,0,0,.4);transition:width .35s ease,height .35s ease}
+  .brand-logo{display:block;width:34px;height:34px;border-radius:9px;transition:width .35s ease,height .35s ease}
   .site-header.is-compact .brand-logo{width:29px;height:29px}
-  @media (prefers-reduced-motion:reduce){.nav-wrap,.brand-logo{transition:none}}
+  /* Header MK mark: one copper shimmer sweeps across the tile on
+     hover / keyboard focus, then stops — it never loops, pulses or
+     spins, and reduced motion turns it off entirely. The shadow
+     lives on the wrapper because its overflow clips the sweep to
+     the tile's rounded corners. */
+  .brand-mark{position:relative;display:inline-flex;flex:none;border-radius:9px;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+  .brand-mark::after{
+    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(115deg,transparent 35%,rgba(244,184,96,.45) 47%,rgba(255,232,196,.9) 50%,rgba(244,184,96,.45) 53%,transparent 65%);
+    transform:translateX(-130%) skewX(-8deg);
+  }
+  .brand:hover .brand-mark::after,.brand:focus-visible .brand-mark::after{animation:brand-sweep .8s ease}
+  @keyframes brand-sweep{from{transform:translateX(-130%) skewX(-8deg)}to{transform:translateX(130%) skewX(-8deg)}}
+  @media (prefers-reduced-motion:reduce){
+    .nav-wrap,.brand-logo{transition:none}
+    .brand:hover .brand-mark::after,.brand:focus-visible .brand-mark::after{animation:none}
+  }
   .nav{display:flex;gap:30px;align-items:center}
   .nav a{
     color:var(--ink-soft);text-decoration:none;font-size:15px;font-weight:500;position:relative;padding:4px 0;
@@ -645,6 +661,9 @@
   }
   .copy-btn:hover{border-color:var(--accent);color:var(--ink)}
   .copy-btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  /* Copy email + Copy number stay side by side in one shared row */
+  .copy-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;align-self:center;max-width:100%}
+  .copy-row .copy-btn{flex:1 1 auto;white-space:nowrap}
   .copy-toast{
     position:fixed;left:50%;bottom:28px;transform:translate(-50%,16px);z-index:200;
     background:var(--grad);color:#17110a;font-weight:700;font-size:14px;
@@ -1440,12 +1459,27 @@
   .preloader-sub{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;color:var(--accent-2);animation:pre-pop .55s .14s cubic-bezier(.16,.8,.26,1) both}
   .preloader-bar{width:148px;height:3px;border-radius:99px;background:var(--line-strong);overflow:hidden;margin-top:6px}
   .preloader-bar span{display:block;height:100%;width:38%;border-radius:99px;background:var(--grad);animation:pre-bar .95s ease-in-out infinite}
+  /* MK monogram draw-in: the M and K outlines are traced in copper
+     stroke, then the copper fill fades in — the same draw-then-settle
+     language as the footer's signature sweep. pathLength="100" on
+     both letters normalises the dash timing. The preloader script
+     holds the intro just long enough for the draw to finish
+     (~1.75s); under reduced motion the letters sit fully drawn. */
+  .mk-draw{
+    fill:url(#plGrad);stroke:#f4b860;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;
+    fill-opacity:0;stroke-dasharray:100;stroke-dashoffset:100;
+  }
+  .mk-m{animation:mk-stroke .9s cubic-bezier(.45,.02,.25,1) .1s forwards,mk-fill .45s ease .95s forwards}
+  .mk-k{animation:mk-stroke .9s cubic-bezier(.45,.02,.25,1) .45s forwards,mk-fill .45s ease 1.3s forwards}
+  @keyframes mk-stroke{to{stroke-dashoffset:0}}
+  @keyframes mk-fill{to{fill-opacity:1}}
   @keyframes pre-pop{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
   @keyframes pre-bar{0%{transform:translateX(-110%)}100%{transform:translateX(400%)}}
   @keyframes pre-failsafe{to{opacity:0;visibility:hidden}}
   @media (prefers-reduced-motion:reduce){
     .preloader-logo,.preloader-name,.preloader-sub{animation:none}
     .preloader-bar span{animation-duration:2.2s}
+    .mk-draw{animation:none;stroke-dashoffset:0;fill-opacity:1}
   }
 
   /* ---------- 1 · Custom cursor glow trail (mouse devices only) ---------- */
@@ -1881,11 +1915,163 @@
   }
   .faq-empty button:hover{border-color:var(--accent);color:var(--accent-strong)}
   .faq-empty button:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+  /* ================================================================
+     Six-features batch — 3D tilt cards, map filter bar, service
+     configurator, lead journey, career timeline, side dot nav.
+     ================================================================ */
+
+  /* ---------- 1 · 3D tilt (Featured Work cards) ---------- */
+  /* JS writes a small perspective rotateX/rotateY while the pointer
+     moves over a slide; this class only sharpens the transform
+     transition for those per-frame updates. Desktop fine-pointer
+     only — the JS never arms it on touch devices. */
+  .carousel-track .case.mk-tilting{
+    transition:transform .15s ease-out,border-color .3s ease,box-shadow .3s ease;
+    will-change:transform;
+  }
+
+  /* ---------- 2 · Map filter status bar (Featured Work) ---------- */
+  .map-filter-bar{
+    display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    border:1px solid rgba(224,127,63,.45);background:var(--accent-soft);
+    border-radius:12px;padding:12px 16px;margin-bottom:18px;font-size:14.5px;color:var(--ink);
+  }
+  .map-filter-bar.show{display:flex}
+  .map-filter-bar button{
+    background:var(--glass);border:1px solid var(--line-strong);border-radius:8px;
+    color:var(--accent-2);font:inherit;font-size:13.5px;font-weight:700;padding:7px 14px;cursor:pointer;
+    transition:border-color .25s ease,color .25s ease,transform .25s ease;
+  }
+  .map-filter-bar button:hover{border-color:var(--accent);color:var(--ink);transform:translateY(-1px)}
+  .map-filter-bar button:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+
+  /* ---------- 3 · Service configurator ---------- */
+  .config-panel{
+    margin-top:22px;background:var(--glass);border:1px solid var(--line);
+    border-radius:18px;padding:30px;display:grid;gap:22px;
+  }
+  .config-head h3{font-size:22px;font-weight:800;margin:6px 0 8px}
+  .config-head p{color:var(--ink-soft);max-width:46em}
+  .config-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .config-fields label{display:grid;gap:7px;font-size:13.5px;font-weight:600;color:var(--ink-soft)}
+  .config-fields select{
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;
+    padding:12px 14px;color:var(--ink);font:inherit;font-size:15px;width:100%;
+    transition:border-color .25s ease,box-shadow .25s ease;
+  }
+  .config-fields select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(224,127,63,.22)}
+  .config-result{background:var(--accent-soft);border:1px solid rgba(224,127,63,.32);border-radius:12px;padding:22px 24px}
+  .config-result strong{display:block;font-size:clamp(24px,3vw,32px);font-weight:900;letter-spacing:-.02em;line-height:1.15}
+  .config-focus{color:var(--ink-soft);font-size:15px;margin-top:7px}
+  .config-includes{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+  .config-includes li{color:var(--ink-soft);font-size:15px;padding-left:26px;position:relative}
+  .config-includes li::before{content:"✓";position:absolute;left:2px;color:var(--ok);font-weight:800}
+  .config-next{margin-top:16px;font-size:15px;color:var(--ink)}
+  .config-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}
+  @media (max-width:640px){
+    .config-panel{padding:22px}
+    .config-fields{grid-template-columns:1fr}
+    .config-actions .btn{flex:1 1 100%;text-align:center}
+  }
+
+  /* ---------- 4 · Lead journey ---------- */
+  .journey-flow{display:flex;align-items:stretch;margin-top:6px}
+  .j-stage{
+    flex:1 1 0;position:relative;
+    background:linear-gradient(165deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    border:1px solid var(--line);border-radius:var(--radius);padding:26px 24px;
+  }
+  :root[data-theme="light"] .j-stage{background:linear-gradient(165deg,rgba(255,255,255,.85),rgba(255,255,255,.45))}
+  .j-stage .j-icon{
+    display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;
+    border-radius:12px;background:var(--accent-soft);border:1px solid rgba(224,127,63,.35);
+    color:var(--accent-2);font-size:21px;margin-bottom:15px;
+  }
+  .j-stage h3{font-size:19px;font-weight:800;margin-bottom:9px}
+  .j-stage h3 .j-step-num{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent-2);letter-spacing:.12em;display:block;margin-bottom:5px;font-weight:500}
+  .j-stage p{color:var(--ink-soft);font-size:15px}
+  .j-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .j-tags span{
+    background:var(--glass);border:1px solid var(--line);border-radius:999px;
+    padding:4px 11px;font-size:12.5px;font-weight:600;color:var(--ink-soft);
+  }
+  .j-link{flex:0 0 52px;position:relative;align-self:center;height:2px;background:var(--line);border-radius:2px}
+  .j-link-fill{position:absolute;inset:0;background:var(--grad);border-radius:2px;transform:scaleX(0);transform-origin:left center}
+  .j-link::after{
+    content:"›";position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);
+    color:var(--accent-2);font-size:22px;font-weight:700;line-height:1;opacity:0;
+  }
+  /* Armed by JS only when motion is welcome: stages start tucked
+     away and open one after another as the flow scrolls into view,
+     the connector fills and arrow lighting up between them. */
+  .journey-flow.armed .j-stage{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s cubic-bezier(.16,.8,.26,1)}
+  .journey-flow.armed.in .j-stage{opacity:1;transform:none}
+  .journey-flow.armed.in .j-stage:nth-child(3){transition-delay:.5s}
+  .journey-flow.armed.in .j-stage:nth-child(5){transition-delay:1s}
+  .journey-flow.armed.in .j-link-fill{transform:scaleX(1);transition:transform .45s ease}
+  .journey-flow.armed.in .j-link:nth-child(2) .j-link-fill{transition-delay:.35s}
+  .journey-flow.armed.in .j-link:nth-child(4) .j-link-fill{transition-delay:.85s}
+  .journey-flow.armed.in .j-link::after{opacity:1;transition:opacity .3s ease}
+  .journey-flow.armed.in .j-link:nth-child(2)::after{transition-delay:.75s}
+  .journey-flow.armed.in .j-link:nth-child(4)::after{transition-delay:1.25s}
+  @media (max-width:820px){
+    .journey-flow{flex-direction:column}
+    .j-link{flex:0 0 38px;width:2px;height:auto;margin:0 auto;align-self:center}
+    .j-link-fill{transform:scaleY(0);transform-origin:center top}
+    .journey-flow.armed.in .j-link-fill{transform:scaleY(1)}
+    .j-link::after{transform:translate(-50%,-50%) rotate(90deg)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .journey-flow.armed .j-stage{opacity:1;transform:none;transition:none}
+    .journey-flow .j-link-fill{transform:none;transition:none}
+    .journey-flow .j-link::after{opacity:1;transition:none}
+  }
+
+  /* ---------- 5 · Career timeline ---------- */
+  .timeline{position:relative;padding-left:36px;display:grid;gap:36px;max-width:780px}
+  .tl-line{position:absolute;left:10px;top:8px;bottom:8px;width:2px;border-radius:2px;background:var(--line);overflow:hidden}
+  .tl-fill{width:100%;height:0;background:var(--grad)}
+  .tl-item{position:relative}
+  .tl-dot{
+    position:absolute;left:-32.5px;top:7px;width:13px;height:13px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--accent);transition:background .4s ease,box-shadow .4s ease;
+  }
+  .tl-item.in .tl-dot{background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+  .tl-year{
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.14em;
+    color:var(--accent-2);font-weight:500;text-transform:uppercase;
+  }
+  .tl-item h3{font-size:20px;font-weight:800;margin:5px 0 7px}
+  .tl-item p{color:var(--ink-soft);font-size:15.5px;max-width:38em}
+
+  /* ---------- 6 · Side dot navigation ---------- */
+  .dot-nav{
+    position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:75;
+    display:none;flex-direction:column;gap:13px;
+  }
+  @media (min-width:1280px){.dot-nav{display:flex}}
+  .dot-nav button{
+    position:relative;width:11px;height:11px;border-radius:50%;flex:none;
+    border:2px solid var(--ink-faint);background:transparent;padding:0;cursor:pointer;
+    transition:border-color .25s ease,background .25s ease,transform .25s ease;
+  }
+  .dot-nav button:hover{border-color:var(--accent-2)}
+  .dot-nav button:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px}
+  .dot-nav button.active{background:var(--grad);border-color:transparent;transform:scale(1.3)}
+  .dot-tip{
+    position:absolute;right:25px;top:50%;transform:translateY(-50%) translateX(5px);
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:7px;
+    color:var(--ink);font-size:12.5px;font-weight:600;padding:5px 11px;white-space:nowrap;
+    box-shadow:0 10px 26px rgba(0,0,0,.35);opacity:0;pointer-events:none;
+    transition:opacity .2s ease,transform .2s ease;
+  }
+  .dot-nav button:hover .dot-tip,.dot-nav button:focus-visible .dot-tip{opacity:1;transform:translateY(-50%) translateX(0)}
 </style>
 </head>
 <body>
   <div class="preloader" id="preloader" aria-hidden="true">
-    <img class="preloader-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwYjE3MmEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTYzYzc4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjMwIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTI3IDg3VjQxaDEwbDE3IDI0IDE3LTI0aDEwdjQ2SDY5VjYwTDU0IDgxIDM5IDYwdjI3SDI3WiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik04MyA0MWgxMnYxOGwxNS0xOGgxNWwtMTkgMjIgMjAgMjRoLTE1TDk1IDY4djE5SDgzVjQxWiIgZmlsbD0iIzZlYTBmZiIvPgo8L3N2Zz4K" alt="" />
+    <svg class="preloader-logo" viewBox="0 0 128 128" aria-hidden="true" focusable="false"><defs><linearGradient id="plBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b172a"/><stop offset="1" stop-color="#163c78"/></linearGradient><linearGradient id="plGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f4b860"/><stop offset=".55" stop-color="#e07f3f"/><stop offset="1" stop-color="#c65a1c"/></linearGradient></defs><rect width="128" height="128" rx="30" fill="url(#plBg)"/><path class="mk-draw mk-m" pathLength="100" d="M27 87V41h10l17 24 17-24h10v46H69V60L54 81 39 60v27H27Z"/><path class="mk-draw mk-k" pathLength="100" d="M83 41h12v18l15-18h15l-19 22 20 24h-15L95 68v19H83V41Z"/></svg>
     <div class="preloader-name">Moudud Karim</div>
     <div class="preloader-sub">B2B LEAD GENERATION</div>
     <div class="preloader-bar"><span></span></div>
@@ -1896,7 +2082,7 @@
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
   <header class="site-header">
     <div class="container nav-wrap">
-      <a class="brand" href="#top" aria-label="Moudud Karim home"><img class="brand-logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiMwYjE3MmEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMTYzYzc4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8cmVjdCB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgcng9IjMwIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTI3IDg3VjQxaDEwbDE3IDI0IDE3LTI0aDEwdjQ2SDY5VjYwTDU0IDgxIDM5IDYwdjI3SDI3WiIgZmlsbD0iI2ZmZiIvPgogIDxwYXRoIGQ9Ik04MyA0MWgxMnYxOGwxNS0xOGgxNWwtMTkgMjIgMjAgMjRoLTE1TDk1IDY4djE5SDgzVjQxWiIgZmlsbD0iIzZlYTBmZiIvPgo8L3N2Zz4K" alt="" />Moudud Karim</a>
+      <a class="brand" href="#top" aria-label="Moudud Karim home"><span class="brand-mark" aria-hidden="true"><svg class="brand-logo" viewBox="0 0 128 128" aria-hidden="true" focusable="false"><defs><linearGradient id="hdBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b172a"/><stop offset="1" stop-color="#163c78"/></linearGradient></defs><rect width="128" height="128" rx="30" fill="url(#hdBg)"/><path d="M27 87V41h10l17 24 17-24h10v46H69V60L54 81 39 60v27H27Z" fill="#fff"/><path d="M83 41h12v18l15-18h15l-19 22 20 24h-15L95 68v19H83V41Z" fill="#6ea0ff"/></svg></span>Moudud Karim</a>
       <nav class="nav" aria-label="Primary navigation">
         <a href="#about">About</a><a href="#services">Services</a><a href="#process">Process</a><a href="#work">Work</a><a href="#faq">FAQ</a><a href="#posts">Posts</a>
         <a class="nav-cta" href="#sample">Request a Sample</a>
@@ -1960,6 +2146,19 @@
       </div>
     </section>
 
+    <section class="section wm" id="career" data-wm="CAREER">
+      <div class="container">
+        <div class="section-head reveal"><div><p class="eyebrow">CAREER TIMELINE</p><h2>From 2019 to today</h2></div><p>The path so far — from starting out in B2B lead generation in 2019 to delivering verified prospect lists for 100+ clients across international markets.</p></div>
+        <div class="timeline" id="careerTimeline">
+          <div class="tl-line" aria-hidden="true"><div class="tl-fill" id="tlFill"></div></div>
+          <div class="tl-item reveal"><span class="tl-dot" aria-hidden="true"></span><span class="tl-year">2019</span><h3>Started in B2B lead generation</h3><p>Began working in the B2B lead generation field — researching companies and decision-makers and building targeted prospect lists.</p></div>
+          <div class="tl-item reveal"><span class="tl-dot" aria-hidden="true"></span><span class="tl-year">Khalid IT</span><h3>Lead Generation Specialist</h3><p>Worked as a Lead Generation Specialist at Khalid IT, building B2B lead lists and business contact data.</p></div>
+          <div class="tl-item reveal"><span class="tl-dot" aria-hidden="true"></span><span class="tl-year">100+ Clients</span><h3>100+ clients served</h3><p>Worked with 100+ clients across a wide range of industries and international markets — from HVAC and construction to software, staffing, and distribution.</p></div>
+          <div class="tl-item reveal"><span class="tl-dot" aria-hidden="true"></span><span class="tl-year">Today</span><h3>B2B Lead Generation Expert</h3><p>Now delivering verified B2B prospect lists as an independent specialist based in Jashore, Bangladesh — for clients across the USA, UK, Canada, Australia, Germany, and wider Europe.</p></div>
+        </div>
+      </div>
+    </section>
+
     <section class="section soft wm" id="services" data-wm="SERVICES">
       <div class="container">
         <div class="section-head reveal"><div><p class="eyebrow">SERVICES</p><h2>What I can deliver for your campaign</h2></div><p>Each list is built around the client’s target market, company criteria, decision-maker roles, and required data fields.</p></div>
@@ -1979,6 +2178,41 @@
             <p>Modern, responsive websites and web applications with Custom Software Development, Frontend Development, Backend Development, and Full-Stack Development solutions.</p>
           </div>
           <a class="related-service-link" href="web-design-development.html">Explore Web Design &amp; Development <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="config-panel reveal" id="serviceConfig">
+          <div class="config-head">
+            <span class="related-service-label">SERVICE CONFIGURATOR</span>
+            <h3>Build your list plan</h3>
+            <p>Pick your industry and the list size you have in mind — I will suggest the right package and the next step. Pricing depends on your exact targeting criteria, so it is always confirmed personally — never with a generic rate card.</p>
+          </div>
+          <div class="config-fields">
+            <label>Industry<select id="cfgIndustry">
+              <option>HVAC &amp; Home Services</option>
+              <option>Construction &amp; Contractors</option>
+              <option>SaaS &amp; Technology</option>
+              <option>Agencies &amp; Marketing</option>
+              <option>Healthcare</option>
+              <option>Financial Services</option>
+              <option>Other B2B</option>
+            </select></label>
+            <label>List size<select id="cfgVolume">
+              <option value="starter">Up to 500 leads</option>
+              <option value="growth" selected>500 – 1,500 leads</option>
+              <option value="scale">1,500 – 5,000 leads</option>
+              <option value="enterprise">5,000+ leads</option>
+            </select></label>
+          </div>
+          <div class="config-result" aria-live="polite">
+            <span class="calc-result-label">Suggested package</span>
+            <strong id="cfgPkgName">Growth List</strong>
+            <p class="config-focus" id="cfgPkgFocus"></p>
+            <ul class="config-includes" id="cfgIncludes"></ul>
+            <p class="config-next" id="cfgNext"></p>
+            <div class="config-actions">
+              <a class="btn primary" href="#sample">Request a Free Sample</a>
+              <a class="btn secondary" href="https://wa.me/8801305029637" target="_blank" rel="noopener">Ask About Pricing on WhatsApp</a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -2011,6 +2245,19 @@
       </div>
     </section>
 
+    <section class="section wm" id="lead-journey" data-wm="JOURNEY">
+      <div class="container">
+        <div class="section-head reveal"><div><p class="eyebrow">LEAD JOURNEY</p><h2>How a lead travels: source to delivery</h2></div><p>Every list follows the same path — gathered from multiple sources, checked with dedicated verification tools, then delivered as a clean, organized spreadsheet.</p></div>
+        <div class="journey-flow" id="journeyFlow">
+          <div class="j-stage"><span class="j-icon" aria-hidden="true">⌕</span><h3><span class="j-step-num">STEP 1</span>Source</h3><p>Companies and decision-makers are researched across multiple sources, matched to your industry, location, and role criteria.</p><div class="j-tags"><span>LinkedIn</span><span>Apollo</span><span>ZoomInfo</span><span>Google</span><span>Company Websites</span><span>Directories</span></div></div>
+          <div class="j-link" aria-hidden="true"><span class="j-link-fill"></span></div>
+          <div class="j-stage"><span class="j-icon" aria-hidden="true">✓</span><h3><span class="j-step-num">STEP 2</span>Verify</h3><p>Collected business emails are checked with dedicated verification tools, and the targeting is reviewed before anything is delivered.</p><div class="j-tags"><span>NeverBounce</span><span>ZeroBounce</span><span>MillionVerifier</span><span>Verifalia</span><span>MailTester</span></div></div>
+          <div class="j-link" aria-hidden="true"><span class="j-link-fill"></span></div>
+          <div class="j-stage"><span class="j-icon" aria-hidden="true">✉</span><h3><span class="j-step-num">STEP 3</span>Deliver</h3><p>You receive a clean, organized spreadsheet with the fields your campaign needs — structured and ready for outreach.</p><div class="j-tags"><span>Company</span><span>Contact</span><span>Title</span><span>Email</span><span>LinkedIn</span><span>Location</span></div></div>
+        </div>
+      </div>
+    </section>
+
     <section class="section tools-section wm" id="tools" data-wm="TOOLS">
       <div class="container">
         <div class="section-head reveal"><div><p class="eyebrow">TOOLS &amp; SOURCES</p><h2>Research and verification toolkit</h2></div><p>Sources and verification tools are selected according to the project and available data.</p></div>
@@ -2025,6 +2272,7 @@
       <div class="container">
         <div class="section-head reveal"><div><p class="eyebrow">FEATURED WORK</p><h2>Selected lead generation projects</h2></div><p>Real examples of prospect list projects completed for international markets.</p></div>
         <div class="work-filters reveal" role="group" aria-label="Filter projects by industry or market"><button class="filter-chip active" type="button" data-filter="all" aria-pressed="true">All</button><button class="filter-chip" type="button" data-filter="hvac" aria-pressed="false">HVAC</button><button class="filter-chip" type="button" data-filter="distribution" aria-pressed="false">Distribution</button><button class="filter-chip" type="button" data-filter="banking" aria-pressed="false">Banking</button><button class="filter-chip" type="button" data-filter="software" aria-pressed="false">Software</button><button class="filter-chip" type="button" data-filter="usa" aria-pressed="false">USA</button><button class="filter-chip" type="button" data-filter="canada" aria-pressed="false">Canada</button><button class="filter-chip" type="button" data-filter="mexico" aria-pressed="false">Mexico</button><button class="filter-chip" type="button" data-filter="germany" aria-pressed="false">Germany</button><button class="filter-chip" type="button" data-filter="global" aria-pressed="false">Global</button></div>
+        <div class="map-filter-bar" id="mapFilterBar" role="status"><span id="mapFilterText"></span><button type="button" id="mapFilterReset">Show all projects</button></div>
         <div class="work-carousel reveal" id="workCarousel">
           <div class="carousel-viewport">
           <div class="case-stack carousel-track" id="carouselTrack">
@@ -2095,7 +2343,7 @@
       </div>
     </section>
 
-    <section class="section markets wm" id="markets" data-wm="MARKETS"><div class="container"><p class="eyebrow">INTERNATIONAL EXPERIENCE</p><h2>International prospect research experience</h2><p class="market-intro">Experience researching companies and decision-makers across key European markets based on specific industries, locations, and buyer profiles.</p><div class="world-map-wrap reveal"><div class="world-map" id="worldMap" role="img" aria-label="World map highlighting the United States, Canada, Mexico, the United Kingdom, Germany, Austria, Switzerland, Sweden, Spain, Poland, the Netherlands, Italy, France, Finland, Denmark, Croatia, Belgium and Australia — markets where lead generation projects have been delivered"></div><div class="world-map-fallback" id="worldMapFallback" hidden><p><strong>Highlighted markets:</strong> United States • Canada • Mexico • United Kingdom • Germany • Austria • Switzerland • Sweden • Spain • Poland • Netherlands • Italy • France • Finland • Denmark • Croatia • Belgium • Australia — lead generation projects delivered across these markets and the other European markets listed below.</p></div><p class="world-map-note">Copper highlights mark markets where lead generation projects have been delivered — hover or tap a highlighted country to see it. <a href="https://www.facebook.com/maps/attribution_terms" target="_blank" rel="noopener">© OpenStreetMap contributors, Map Data Legal Notices</a></p></div><div class="market-row"><span>United Kingdom</span><span>Germany</span><span>France</span><span>Netherlands</span><span>Ireland</span><span>Switzerland</span><span>Belgium</span><span>Austria</span><span>Sweden</span><span>Denmark</span><span>Norway</span><span>Finland</span><span>Spain</span><span>Italy</span><span>Cyprus</span><span>Poland</span></div></div></section>
+    <section class="section markets wm" id="markets" data-wm="MARKETS"><div class="container"><p class="eyebrow">INTERNATIONAL EXPERIENCE</p><h2>International prospect research experience</h2><p class="market-intro">Experience researching companies and decision-makers across key European markets based on specific industries, locations, and buyer profiles.</p><div class="world-map-wrap reveal"><div class="world-map" id="worldMap" role="img" aria-label="World map highlighting the United States, Canada, Mexico, the United Kingdom, Germany, Austria, Switzerland, Sweden, Spain, Poland, the Netherlands, Italy, France, Finland, Denmark, Croatia, Belgium and Australia — markets where lead generation projects have been delivered"></div><div class="world-map-fallback" id="worldMapFallback" hidden><p><strong>Highlighted markets:</strong> United States • Canada • Mexico • United Kingdom • Germany • Austria • Switzerland • Sweden • Spain • Poland • Netherlands • Italy • France • Finland • Denmark • Croatia • Belgium • Australia — lead generation projects delivered across these markets and the other European markets listed below.</p></div><p class="world-map-note">Copper highlights mark markets where lead generation projects have been delivered — hover or tap a highlighted country to see it, and click a highlighted country to filter the featured projects by that market. <a href="https://www.facebook.com/maps/attribution_terms" target="_blank" rel="noopener">© OpenStreetMap contributors, Map Data Legal Notices</a></p></div><div class="market-row"><span>United Kingdom</span><span>Germany</span><span>France</span><span>Netherlands</span><span>Ireland</span><span>Switzerland</span><span>Belgium</span><span>Austria</span><span>Sweden</span><span>Denmark</span><span>Norway</span><span>Finland</span><span>Spain</span><span>Italy</span><span>Cyprus</span><span>Poland</span></div></div></section>
 
     <section class="section wm" id="calculator" data-wm="ESTIMATE">
       <div class="container">
@@ -2167,7 +2415,7 @@
 
     <section class="section sample-section dark-contact" id="sample" data-wm="SAMPLE">
       <div class="container sample-grid">
-        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><p class="dhaka-clock mono">Bangladesh time: <span id="dhakaTime">—</span></p></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><button class="copy-btn" type="button" data-copy="ahmed.moududcd@gmail.com" aria-label="Copy email address ahmed.moududcd@gmail.com">Copy email</button><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a><button class="copy-btn" type="button" data-copy="+8801305029637" aria-label="Copy WhatsApp number +8801305029637">Copy number</button></div></div>
+        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><p class="dhaka-clock mono">Bangladesh time: <span id="dhakaTime">—</span></p></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><div class="copy-row"><button class="copy-btn" type="button" data-copy="ahmed.moududcd@gmail.com" aria-label="Copy email address ahmed.moududcd@gmail.com">Copy email</button><button class="copy-btn" type="button" data-copy="+8801305029637" aria-label="Copy WhatsApp number +8801305029637">Copy number</button></div><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a></div></div>
         <form class="brief-form reveal" id="briefForm" action="https://formspree.io/f/xbgdvznw" method="POST">
           <div class="form-progress" aria-hidden="true"><span class="fp-step is-current" id="fpStep1">STEP 1</span><span class="fp-bar"><span class="fp-fill" id="fpFill"></span></span><span class="fp-step" id="fpStep2">STEP 2</span><span class="fp-bar"><span class="fp-fill" id="fpFill2"></span></span><span class="fp-step" id="fpStep3">STEP 3</span></div>
           <p class="wizard-step-text" id="wizardStepText" role="status">Step 1 of 3 — Project details</p>
@@ -2204,6 +2452,19 @@
   <footer><div class="container footer-grid"><div><strong>Moudud Karim</strong><p>B2B Lead Generation &amp; Prospect List Building Expert</p><span class="signature" id="signatureName" aria-hidden="true">Moudud Karim</span></div><div><a href="mailto:ahmed.moududcd@gmail.com">ahmed.moududcd@gmail.com</a><span>Jashore, Khulna, Bangladesh</span></div><p>© <span id="year"></span> Moudud Karim. All rights reserved.</p></div><div class="footer-giant" aria-hidden="true">MOUDUD KARIM</div></footer>
   <button class="to-top" id="toTop" type="button" aria-label="Scroll to bottom"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tt-track" cx="24" cy="24" r="20"/><circle class="tt-ring" id="toTopRing" cx="24" cy="24" r="20" transform="rotate(-90 24 24)"/><path class="tt-arrow tt-arrow-down" id="toTopArrow" d="M24 30.5v-13M17.8 23.2L24 17l6.2 6.2" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <a class="wa-float" href="https://wa.me/8801305029637" target="_blank" rel="noopener" aria-label="Chat with Moudud Karim on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
+  <nav class="dot-nav" id="dotNav" aria-label="Page sections">
+    <button type="button" data-target="top" aria-label="Go to: Top"><span class="dot-tip" aria-hidden="true">Top</span></button>
+    <button type="button" data-target="about" aria-label="Go to: About"><span class="dot-tip" aria-hidden="true">About</span></button>
+    <button type="button" data-target="career" aria-label="Go to: Career Timeline"><span class="dot-tip" aria-hidden="true">Career Timeline</span></button>
+    <button type="button" data-target="services" aria-label="Go to: Services"><span class="dot-tip" aria-hidden="true">Services</span></button>
+    <button type="button" data-target="process" aria-label="Go to: Process"><span class="dot-tip" aria-hidden="true">Process</span></button>
+    <button type="button" data-target="work" aria-label="Go to: Featured Work"><span class="dot-tip" aria-hidden="true">Featured Work</span></button>
+    <button type="button" data-target="markets" aria-label="Go to: Markets"><span class="dot-tip" aria-hidden="true">Markets</span></button>
+    <button type="button" data-target="calculator" aria-label="Go to: Lead Calculator"><span class="dot-tip" aria-hidden="true">Lead Calculator</span></button>
+    <button type="button" data-target="faq" aria-label="Go to: FAQ"><span class="dot-tip" aria-hidden="true">FAQ</span></button>
+    <button type="button" data-target="posts" aria-label="Go to: LinkedIn Posts"><span class="dot-tip" aria-hidden="true">LinkedIn Posts</span></button>
+    <button type="button" data-target="sample" aria-label="Go to: Request a Free Sample"><span class="dot-tip" aria-hidden="true">Free Sample</span></button>
+  </nav>
   <div class="contact-widget" id="contactWidget">
     <div class="cw-links" id="cwLinks">
       <a class="cw-link" href="#sample"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>Contact</a>
@@ -3411,14 +3672,19 @@
      gate is closed.
      ================================================================ */
 
-  // 2 · Branded preloader — dismiss on window load once it has had a
-  // brief moment on screen, and never later than ~1.05s after this
-  // script runs, so the intro stays quick. A CSS failsafe animation
-  // also hides it if anything above ever fails.
+  // 2 · Branded preloader — dismiss on window load once the MK
+  // monogram's stroke draw-in has had time to finish (~1.75s on
+  // screen, never later than ~2.05s after this script runs; the old
+  // brief timing returns under reduced motion, where the letters
+  // sit fully drawn). A CSS failsafe animation also hides it if
+  // anything above ever fails.
   (() => {
     const pre = document.getElementById('preloader');
     if (!pre) return;
     const startedAt = performance.now();
+    const reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    const minShow = reduceMotion ? 480 : 1750;
+    const maxShow = reduceMotion ? 1050 : 2050;
     let hidden = false;
     const hide = () => {
       if (hidden) return;
@@ -3427,10 +3693,10 @@
       setTimeout(() => { if (pre.parentNode) pre.parentNode.removeChild(pre); }, 650);
     };
     window.addEventListener('load', () => {
-      const wait = Math.max(0, 480 - (performance.now() - startedAt));
+      const wait = Math.max(0, minShow - (performance.now() - startedAt));
       setTimeout(hide, wait);
     });
-    setTimeout(hide, 1050);
+    setTimeout(hide, maxShow);
   })();
 
   // 3 · Kinetic hero headline — wrap every word of the h1 in a mask so
@@ -4199,5 +4465,322 @@
     })();
   })();
   </script>
+<script>
+  /* ================================================================
+     Six-features batch — behaviour: 3D tilt project cards, map-to-
+     filter, service configurator, lead-journey animation, career
+     timeline fill, and side dot navigation. Each block is
+     self-contained, feature-detects its own gates, and invents no
+     content: the configurator never shows a price (pricing goes to
+     WhatsApp / the sample form), and the timeline only restates
+     facts already published on this page.
+     ================================================================ */
+  (() => {
+    'use strict';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    /* ---------- 1 · 3D tilt — Featured Work cards ----------
+       On desktop fine-pointer devices the active slide leans a few
+       degrees toward the cursor and settles back on leave. Touch
+       and reduced-motion visitors get the plain card, untouched. */
+    if (finePointer && !reduceMotion) {
+      const MAX = 5.5;
+      document.querySelectorAll('#carouselTrack .case').forEach((card) => {
+        let raf = null, settleT = null;
+        card.addEventListener('pointermove', (e) => {
+          if (card.classList.contains('mk-skewing')) return;
+          const r = card.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          if (settleT) { clearTimeout(settleT); settleT = null; }
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => {
+            raf = null;
+            card.classList.add('mk-tilting');
+            card.style.transform = 'perspective(1200px) rotateX(' + (-py * MAX).toFixed(2) + 'deg) rotateY(' + (px * MAX).toFixed(2) + 'deg)';
+          });
+        });
+        const settle = () => {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          if (!card.style.transform) return;
+          card.style.transform = '';
+          settleT = setTimeout(() => card.classList.remove('mk-tilting'), 190);
+        };
+        card.addEventListener('pointerleave', settle);
+        card.addEventListener('pointercancel', settle);
+      });
+    }
+
+    /* ---------- 2 · Map → filter Featured Work ----------
+       Clicking a highlighted country on the world map applies the
+       matching market filter to the Featured Work carousel (through
+       the existing filter chips, so all carousel behaviour stays in
+       one place) and scrolls the visitor to the results. A status
+       bar above the carousel names the active filter and its reset
+       button restores the full list. Countries with no featured
+       project say so honestly instead of showing an empty carousel.
+       The map library keeps its instance inside its own component
+       tree, so it is located there defensively — if it cannot be
+       found, the map simply stays the display it already was. */
+    (() => {
+      const bar = document.getElementById('mapFilterBar');
+      const barText = document.getElementById('mapFilterText');
+      const resetBtn = document.getElementById('mapFilterReset');
+      const mapEl = document.getElementById('worldMap');
+      if (!bar || !barText || !mapEl) return;
+      const chips = [...document.querySelectorAll('.filter-chip')];
+      const chipFor = (f) => chips.find((c) => c.getAttribute('data-filter') === f) || null;
+      const COUNTRY_FILTER = {
+        'United States': 'usa', 'Canada': 'canada', 'Mexico': 'mexico',
+        'Germany': 'germany', 'Austria': 'global'
+      };
+      let applying = false;
+      const goWork = () => {
+        try {
+          if (typeof mkGoToSection === 'function') { mkGoToSection('work'); return; }
+        } catch (err) { /* fall through to the plain scroll */ }
+        const w = document.getElementById('work');
+        if (w) w.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+      };
+      const applyCountry = (name) => {
+        const f = COUNTRY_FILTER[name];
+        const chip = f ? chipFor(f) : null;
+        if (chip) {
+          applying = true;
+          chip.click();
+          applying = false;
+          const n = document.querySelectorAll('#carouselTrack .case:not(.is-filtered-out)').length;
+          barText.textContent = 'Showing ' + n + ' featured project' + (n === 1 ? '' : 's') + ' for ' + name + ' — filtered from the world map.';
+        } else {
+          barText.textContent = 'No featured projects for ' + name + ' yet — the full project list is below.';
+        }
+        bar.classList.add('show');
+        goWork();
+      };
+      if (resetBtn) resetBtn.addEventListener('click', () => {
+        const all = chipFor('all');
+        if (all) { applying = true; all.click(); applying = false; }
+        bar.classList.remove('show');
+      });
+      chips.forEach((c) => c.addEventListener('click', () => { if (!applying) bar.classList.remove('show'); }));
+
+      const isMap = (v) => !!v && typeof v === 'object'
+        && typeof v.queryRenderedFeatures === 'function'
+        && typeof v.on === 'function'
+        && typeof v.getContainer === 'function';
+      const liveIn = (v) => { try { const c = v.getContainer(); return !!c && mapEl.contains(c); } catch (err) { return false; } };
+      const findMap = () => {
+        try {
+          const keys = Object.keys(mapEl).filter((k) => k.indexOf('__reactContainer') === 0 || k.indexOf('__reactFiber') === 0);
+          for (const key of keys) {
+            const seen = new Set();
+            const stack = [mapEl[key]];
+            let guard = 0;
+            while (stack.length && guard++ < 6000) {
+              const f = stack.pop();
+              if (!f || typeof f !== 'object' || seen.has(f)) continue;
+              seen.add(f);
+              const props = f.memoizedProps;
+              if (props && isMap(props.value) && liveIn(props.value)) return props.value;
+              let ms = f.memoizedState, hg = 0;
+              while (ms && hg++ < 40) {
+                if (isMap(ms.memoizedState) && liveIn(ms.memoizedState)) return ms.memoizedState;
+                ms = ms.next;
+              }
+              if (f.child) stack.push(f.child);
+              if (f.sibling) stack.push(f.sibling);
+              if (f.alternate) stack.push(f.alternate);
+            }
+          }
+        } catch (err) { /* the map stays display-only */ }
+        return null;
+      };
+      let wired = null;
+      const wire = () => {
+        if (wired && !liveIn(wired)) wired = null;
+        if (wired) return;
+        const inst = findMap();
+        if (!inst) return;
+        wired = inst;
+        try {
+          inst.on('click', (e) => {
+            let feats = [];
+            try { feats = inst.queryRenderedFeatures(e.point, { layers: ['markets-fill'] }); } catch (err) { feats = []; }
+            if (!feats || !feats.length) return;
+            const name = feats[0].properties && feats[0].properties.dname;
+            if (name) applyCountry(name);
+          });
+        } catch (err) { wired = null; }
+      };
+      wire();
+      setInterval(wire, 1500);
+      document.addEventListener('mk:themechange', () => setTimeout(wire, 500));
+    })();
+
+    /* ---------- 3 · Service configurator ----------
+       Industry + list size suggest a package and the next step.
+       No price is ever shown or implied: pricing questions are
+       handed to WhatsApp or the sample-request form, as everywhere
+       else on this page. */
+    (() => {
+      const ind = document.getElementById('cfgIndustry');
+      const vol = document.getElementById('cfgVolume');
+      const nameEl = document.getElementById('cfgPkgName');
+      const focusEl = document.getElementById('cfgPkgFocus');
+      const listEl = document.getElementById('cfgIncludes');
+      const nextEl = document.getElementById('cfgNext');
+      if (!ind || !vol || !nameEl || !focusEl || !listEl || !nextEl) return;
+      const PKGS = {
+        starter: {
+          name: 'Starter List',
+          includes: [
+            'Targeted company & decision-maker research for your criteria',
+            'Business emails verified before delivery',
+            'Clean, organized spreadsheet — ready for outreach'
+          ],
+          next: 'Next step: request a free sample below to check the data quality first — then we scale the list.'
+        },
+        growth: {
+          name: 'Growth List',
+          includes: [
+            'Everything in the Starter List',
+            'Data enrichment — job titles, LinkedIn profiles and locations filled in',
+            'Custom data fields structured around your campaign'
+          ],
+          next: 'Next step: request a free sample with your targeting criteria — the final timeline is confirmed after reviewing them.'
+        },
+        scale: {
+          name: 'Scale List',
+          includes: [
+            'Everything in the Growth List',
+            'Multi-source research across databases, search engines and directories',
+            'Segmentation by the criteria your campaign needs — industry, location, company size'
+          ],
+          next: 'Next step: share your targeting criteria in the sample-request form, so the segments are planned before research starts.'
+        },
+        enterprise: {
+          name: 'Custom Research Program',
+          includes: [
+            'Everything in the Scale List',
+            'Large-scale decision-maker research across multiple markets',
+            'One organized database, segmented the way your campaign needs'
+          ],
+          next: 'Next step: tell me the markets and criteria in the sample-request form — larger programs are planned together first.'
+        }
+      };
+      const OWNER_FOCUS = 'Focused on owner-level decision-makers — owners, founders and CEOs — at the companies you want to reach.';
+      const FOCUS = {
+        'HVAC & Home Services': OWNER_FOCUS,
+        'Construction & Contractors': OWNER_FOCUS
+      };
+      const DEFAULT_FOCUS = 'Decision-makers matched to your industry, geography, company type and role criteria.';
+      const render = () => {
+        const p = PKGS[vol.value] || PKGS.growth;
+        nameEl.textContent = p.name;
+        focusEl.textContent = FOCUS[ind.value] || DEFAULT_FOCUS;
+        listEl.innerHTML = p.includes.map((t) => '<li>' + t + '</li>').join('');
+        nextEl.textContent = p.next;
+      };
+      ind.addEventListener('change', render);
+      vol.addEventListener('change', render);
+      render();
+    })();
+
+    /* ---------- 4 · Lead journey — source → verify → deliver ----------
+       The three stages open one after another as the diagram
+       scrolls into view, the connector filling in between them.
+       Reduced-motion visitors see the finished diagram at once. */
+    (() => {
+      const flow = document.getElementById('journeyFlow');
+      if (!flow) return;
+      if (reduceMotion || !('IntersectionObserver' in window)) { flow.classList.add('in'); return; }
+      flow.classList.add('armed');
+      const io = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) { flow.classList.add('in'); io.disconnect(); }
+      }, { threshold: 0.3 });
+      io.observe(flow);
+    })();
+
+    /* ---------- 5 · Career timeline — line fills as you scroll ----------
+       The copper line grows through the timeline in step with the
+       visitor's scroll; the milestone dots themselves light up via
+       the page's existing reveal system. */
+    (() => {
+      const tl = document.getElementById('careerTimeline');
+      const fill = document.getElementById('tlFill');
+      if (!tl || !fill) return;
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const r = tl.getBoundingClientRect();
+        const total = r.height - 30;
+        const done = Math.min(total, Math.max(0, window.innerHeight * 0.72 - r.top));
+        fill.style.height = (total > 0 ? (done / total) * 100 : 0).toFixed(1) + '%';
+      };
+      const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+      window.addEventListener('scroll', request, { passive: true });
+      window.addEventListener('resize', request);
+      update();
+    })();
+
+    /* ---------- 6 · Side dot navigation ----------
+       A slim rail of dots (wide screens only, per the CSS) mirrors
+       the page's main sections: the current section's dot stays
+       highlighted as you scroll, and a click rides the same
+       section-jump behaviour as the header nav. */
+    (() => {
+      const nav = document.getElementById('dotNav');
+      if (!nav) return;
+      const btns = [...nav.querySelectorAll('button[data-target]')];
+      const secs = btns
+        .map((b) => ({ btn: b, id: b.getAttribute('data-target'), el: document.getElementById(b.getAttribute('data-target')) }))
+        .filter((s) => s.el);
+      if (!secs.length) return;
+      btns.forEach((b) => b.addEventListener('click', () => {
+        const id = b.getAttribute('data-target');
+        if (id === 'top') {
+          window.__mkNavLock = { id: 'top', until: Date.now() + 2400 };
+          if (window.__mkLenis && !reduceMotion) window.__mkLenis.scrollTo(0, { duration: 1.2 });
+          else window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+          document.dispatchEvent(new CustomEvent('mk:navsync'));
+          return;
+        }
+        try { mkGoToSection(id); } catch (err) {
+          const el = document.getElementById(id);
+          if (el) el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+        }
+      }));
+      let current = null;
+      const setActive = (id) => {
+        if (id === current) return;
+        current = id;
+        secs.forEach((s) => {
+          const on = s.id === id;
+          s.btn.classList.toggle('active', on);
+          if (on) s.btn.setAttribute('aria-current', 'true');
+          else s.btn.removeAttribute('aria-current');
+        });
+      };
+      let ticking = false;
+      const update = () => {
+        ticking = false;
+        const probe = window.innerHeight * 0.42;
+        let active = 'top';
+        secs.forEach((s) => {
+          if (s.id === 'top') return;
+          if (s.el.getBoundingClientRect().top <= probe) active = s.id;
+        });
+        setActive(active);
+      };
+      const request = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+      window.addEventListener('scroll', request, { passive: true });
+      window.addEventListener('resize', request);
+      document.addEventListener('mk:navsync', request);
+      update();
+    })();
+  })();
+</script>
 </body>
 </html>
