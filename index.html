@@ -2231,6 +2231,82 @@
   @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:reduce){
     .service-grid .card:hover::after,.service-grid .card:focus-within::after{animation:none}
   }
+
+  /* ================================================================
+     Six-features batch (round 3): interactive particle network,
+     cursor-following hero aurora, hero photo 3D tilt, Save Contact
+     (vCard) button, WhatsApp QR code, multi-timezone clock.
+     The motion pieces are fine-pointer only and respect
+     prefers-reduced-motion; the contact additions are static and
+     wrap cleanly on phones — no horizontal overflow anywhere.
+     ================================================================ */
+
+  /* ---------- 1 · Particle network (hero canvas) ----------
+     Behaviour-only: the existing hero particle loop now gathers
+     particles toward the cursor and brightens the links between
+     the ones inside the cluster, so the field knits into a network
+     around the pointer and loosens back to a drift when it leaves.
+     The canvas itself keeps its original styles above. */
+
+  /* ---------- 2 · Cursor-following hero aurora ----------
+     A large soft copper glow layered under the hero content; the
+     script eases its centre after the cursor (lerp), so the light
+     trails gently instead of snapping. Fine-pointer only — touch
+     devices and reduced motion never see it. */
+  .hero-cursor-glow{
+    position:absolute;left:0;top:0;width:560px;height:560px;margin:-280px 0 0 -280px;
+    border-radius:50%;pointer-events:none;z-index:0;opacity:0;
+    background:radial-gradient(circle,rgba(244,184,96,.22) 0%,rgba(224,127,63,.10) 42%,transparent 68%);
+    filter:blur(30px);will-change:transform;transition:opacity .6s ease;
+  }
+  :root[data-theme="light"] .hero-cursor-glow{
+    background:radial-gradient(circle,rgba(224,127,63,.20) 0%,rgba(224,127,63,.08) 42%,transparent 68%);
+  }
+  @media (hover:none),(pointer:coarse){.hero-cursor-glow{display:none}}
+  @media (prefers-reduced-motion:reduce){.hero-cursor-glow{display:none}}
+
+  /* ---------- 3 · Hero photo 3D tilt ----------
+     Same motion language as the Featured Work cards: the script
+     writes a small perspective rotateX/rotateY while the pointer
+     moves over the portrait; this class only sharpens the
+     transform transition for those per-frame updates. The tilt
+     rides .photo-ring's transform, so the parallax `translate`
+     offsets and the inner photo's float animation compose with
+     it untouched. */
+  .photo-ring.mk-tilting{transition:transform .15s ease-out;will-change:transform}
+
+  /* ---------- 4 · Save Contact (vCard) + 5 · WhatsApp QR ---------- */
+  .contact-extras{display:flex;align-items:center;gap:26px;flex-wrap:wrap;margin-top:26px}
+  .save-contact-btn{
+    display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+    font-family:inherit;font-weight:700;font-size:15px;color:var(--ink);
+    background:var(--glass-strong);border:1px solid var(--line-strong);border-radius:10px;padding:12px 22px;
+    transition:border-color .25s ease,transform .25s ease,color .25s ease;
+  }
+  .save-contact-btn:hover{border-color:var(--accent);transform:translateY(-2px);color:#fff}
+  .save-contact-btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  .save-contact-btn svg{width:18px;height:18px;color:var(--accent-2);flex:none}
+  .wa-qr{margin:0;display:flex;flex-direction:column;align-items:center;gap:9px}
+  .wa-qr-card{
+    display:block;background:#fff;border-radius:12px;padding:9px;line-height:0;
+    box-shadow:0 14px 32px rgba(0,0,0,.35);
+  }
+  .wa-qr-card img{display:block;width:104px;height:104px}
+  .wa-qr figcaption{font-size:13px;color:var(--ink-soft);font-weight:600;text-align:center}
+  @media (max-width:860px){
+    .contact-extras{gap:18px;margin-top:20px}
+    .save-contact-btn{font-size:14px;padding:11px 18px}
+    .wa-qr-card img{width:92px;height:92px}
+  }
+
+  /* ---------- 6 · Multi-timezone clock ----------
+     Dhaka beside New York and London, in the same mono style the
+     single Bangladesh clock used; wraps onto extra lines on
+     narrow screens instead of overflowing. */
+  .tz-clocks{display:flex;flex-wrap:wrap;gap:5px 26px;font-size:14px;color:var(--ink-soft)}
+  .tz-clocks .tz-label{color:var(--ink-faint);margin-right:7px}
+  .tz-clocks b{color:var(--ink);font-weight:600;white-space:nowrap}
+  @media (max-width:860px){.tz-clocks{font-size:12.5px;gap:4px 18px}}
 </style>
 </head>
 <body>
@@ -2262,6 +2338,7 @@
   <main id="top">
     <section class="hero section">
       <canvas class="hero-particles" id="heroParticles" aria-hidden="true"></canvas>
+      <div class="hero-cursor-glow" id="heroCursorGlow" aria-hidden="true"></div>
       <div class="container hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">B2B LEAD GENERATION • PROSPECT LIST BUILDING</p>
@@ -2655,7 +2732,7 @@
 
     <section class="section sample-section dark-contact" id="sample" data-wm="SAMPLE">
       <div class="container sample-grid">
-        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><p class="dhaka-clock mono">Bangladesh time: <span id="dhakaTime">—</span></p></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><button class="copy-btn" type="button" data-copy="ahmed.moududcd@gmail.com" aria-label="Copy email address ahmed.moududcd@gmail.com">Copy email</button><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a><button class="copy-btn" type="button" data-copy="+8801305029637" aria-label="Copy WhatsApp number +8801305029637">Copy number</button></div></div>
+        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><div class="tz-clocks mono" role="group" aria-label="Current time in Dhaka, New York and London"><span><span class="tz-label">Dhaka</span><b id="dhakaTime">—</b></span><span><span class="tz-label">New York</span><b id="nyTime">—</b></span><span><span class="tz-label">London</span><b id="londonTime">—</b></span></div></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><button class="copy-btn" type="button" data-copy="ahmed.moududcd@gmail.com" aria-label="Copy email address ahmed.moududcd@gmail.com">Copy email</button><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a><button class="copy-btn" type="button" data-copy="+8801305029637" aria-label="Copy WhatsApp number +8801305029637">Copy number</button></div><div class="contact-extras"><button class="save-contact-btn" type="button" id="saveContactBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 19.5h16"/></svg><span id="saveContactLabel">Save Contact</span></button><figure class="wa-qr"><span class="wa-qr-card"><img src="data:image/png;base64,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f6PZ/7jZT59dNXOqBchJLUBOagFyUguQk1qAnNQC5KQWICe1ADmpBchJLUBOagFyUguQk1qA3PCy17li5ejcfQtkheIp+d1PzD6lwn135FQLkJNagJzUAuSkFiAntQA5qQXISS1ATmoBclILkJNagJzUAuSkFiAntQC5NctefNf5ZtX5xtL5X55/+pbvueXeZ7fKir2uLetrTrUAOakFyEktQE5qAXJSC5CTWoCc1ALkpBYgJ7UAOakFyEktQE5qAXJSC5Cz7HWVYjnpXLGxtGWzalaxAbbFljfEqRYgJ7UAOakFyEktQE5qAXJSC5CTWoCc1ALkpBYgJ7UAOakFyEktQE5qAXJrlr3sNv36io2lLWthb97WKu79vufpVAuQk1qAnNQC5KQWICe1ADmpBchJLUBOagFyUguQk1qAnNQC5KQWICe1ALnhZa8tqzyziqd033LSrGKzavbTz69ZvCGzz7PgVAuQk1qAnNQC5KQWICe1ADmpBchJLUBOagFyUguQk1qAnNQC5KQWICe1ALnP8zzT3wHgck61ADmpBchJLUBOagFyUguQk1qAnNQC5KQWICe1ADmpBchJLUBOagFyUguQk1qAnNQC5KQWICe1ADmpBchJLUBOagFyUguQk1qAnNQC5KQWICe1ADmpBchJLUDuPyeKLvDtb1J5AAAAAElFTkSuQmCC" alt="QR code — scan to open a WhatsApp chat with Moudud Karim" width="462" height="462" loading="lazy" decoding="async" /></span><figcaption>Scan to chat on WhatsApp</figcaption></figure></div></div>
         <form class="brief-form reveal" id="briefForm" action="https://formspree.io/f/xbgdvznw" method="POST">
           <div class="form-progress" aria-hidden="true"><span class="fp-step is-current" id="fpStep1">STEP 1</span><span class="fp-bar"><span class="fp-fill" id="fpFill"></span></span><span class="fp-step" id="fpStep2">STEP 2</span><span class="fp-bar"><span class="fp-fill" id="fpFill2"></span></span><span class="fp-step" id="fpStep3">STEP 3</span></div>
           <p class="wizard-step-text" id="wizardStepText" role="status">Step 1 of 3 — Project details</p>
@@ -2781,13 +2858,21 @@
     bookingText.textContent = 'Now booking projects for ' + nextMonth.toLocaleString('en-US', { month: 'long', year: 'numeric' });
   }
 
-  // Live Bangladesh clock (Asia/Dhaka), refreshed every second.
-  const dhakaTime = document.getElementById('dhakaTime');
-  if (dhakaTime) {
-    const dhakaFormat = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true });
-    const tickDhakaClock = () => { dhakaTime.textContent = dhakaFormat.format(new Date()); };
-    tickDhakaClock();
-    setInterval(tickDhakaClock, 1000);
+  // Live clocks — Dhaka (Asia/Dhaka) beside New York and London, so
+  // clients abroad can see the working-hours overlap at a glance.
+  // Refreshed every second, exactly as the single Dhaka clock was.
+  const tzClocks = [
+    { el: document.getElementById('dhakaTime'), zone: 'Asia/Dhaka' },
+    { el: document.getElementById('nyTime'), zone: 'America/New_York' },
+    { el: document.getElementById('londonTime'), zone: 'Europe/London' }
+  ].filter(c => c.el).map(c => ({
+    el: c.el,
+    fmt: new Intl.DateTimeFormat('en-US', { timeZone: c.zone, hour: 'numeric', minute: '2-digit', hour12: true })
+  }));
+  if (tzClocks.length) {
+    const tickClocks = () => { const now = new Date(); tzClocks.forEach(c => { c.el.textContent = c.fmt.format(now); }); };
+    tickClocks();
+    setInterval(tickClocks, 1000);
   }
 
   // Mobile menu
@@ -4636,12 +4721,16 @@
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    /* ---------- 1 · Particle hero ----------
+    /* ---------- 1 · Particle hero — interactive network ----------
        A capped field of copper sparks drifts behind the hero copy.
-       Particles repel gently from the cursor and link to nearby
-       neighbours. The loop runs only while the hero is on screen
-       and the tab is visible; touch devices and reduced motion
-       never start it. Colours follow the active theme. */
+       Particles inside the cursor's reach are drawn gently toward
+       it and the links between them brighten and reach further, so
+       the field knits into a visible network around the pointer;
+       when the pointer moves on, the pull stops and the relax term
+       spreads them back into their own drift. The loop runs only
+       while the hero is on screen and the tab is visible; touch
+       devices and reduced motion never start it. Colours follow
+       the active theme. */
     // Deferred to idle time (scheduled below) so first paint never
     // waits on the particle field; behaviour once started is unchanged.
     function initParticles() {
@@ -4693,10 +4782,16 @@
         for (i = 0; i < parts.length; i++) {
           p = parts[i];
           if (mouse.active) {
-            dx = p.x - mouse.x; dy = p.y - mouse.y; d2 = dx * dx + dy * dy;
-            if (d2 < 12100 && d2 > 0.01) {
-              var d = Math.sqrt(d2), f = ((110 - d) / 110) * 0.55;
-              p.vx += (dx / d) * f * 0.14; p.vy += (dy / d) * f * 0.14;
+            dx = mouse.x - p.x; dy = mouse.y - p.y; d2 = dx * dx + dy * dy;
+            // Inside the gather radius the particle is pulled gently
+            // toward the pointer, so the field clusters around it.
+            // The dead zone at the centre keeps gathered particles
+            // from jittering on top of the cursor; outside the
+            // radius nothing pulls, and the relax below spreads
+            // them back into their own drift.
+            if (d2 < 32400 && d2 > 100) {
+              var d = Math.sqrt(d2), f = (1 - d / 180) * 0.0017;
+              p.vx += dx * f; p.vy += dy * f;
             }
           }
           // Relax back to the particle's own drift so pushes fade out.
@@ -4711,14 +4806,25 @@
           ctx.fill();
         }
         // Faint threads between close particles, and to the cursor.
+        // A pair whose midpoint sits near the cursor links across a
+        // longer reach and far more brightly — that is what makes
+        // the cluster read as a network while the rest of the field
+        // stays a quiet drift.
         ctx.lineWidth = 1;
         for (i = 0; i < parts.length; i++) {
           p = parts[i];
           for (j = i + 1; j < parts.length; j++) {
             q = parts[j];
             dx = p.x - q.x; dy = p.y - q.y; d2 = dx * dx + dy * dy;
-            if (d2 < LINK * LINK) {
-              ctx.strokeStyle = 'rgba(' + cols[p.c] + ',' + (0.13 * (1 - Math.sqrt(d2) / LINK)).toFixed(3) + ')';
+            var linkR = LINK, boost = 0;
+            if (mouse.active) {
+              var mx = (p.x + q.x) / 2 - mouse.x, my = (p.y + q.y) / 2 - mouse.y;
+              var md = Math.sqrt(mx * mx + my * my);
+              if (md < 200) { boost = 1 - md / 200; linkR = LINK + 48 * boost; }
+            }
+            if (d2 < linkR * linkR) {
+              var la = 0.13 * (1 - Math.sqrt(d2) / linkR) + 0.36 * boost;
+              ctx.strokeStyle = 'rgba(' + cols[p.c] + ',' + Math.min(la, 0.52).toFixed(3) + ')';
               ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
             }
           }
@@ -5304,6 +5410,131 @@
       }), { threshold: .3 });
       io.observe(root);
     } else { play(); }
+  })();
+</script>
+<script>
+  /* ================================================================
+     Six-features batch (round 3) — behaviour: cursor-following hero
+     aurora, hero photo 3D tilt, Save Contact (vCard). The particle
+     network lives in the existing hero canvas loop and the
+     multi-timezone clocks in the main script; the QR code is a
+     static asset. Motion pieces are fine-pointer only, respect
+     prefers-reduced-motion, and pause off-screen. The vCard holds
+     only details already published on this page — name, email,
+     phone number, LinkedIn — nothing new is invented.
+     ================================================================ */
+  (() => {
+    'use strict';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const hero = document.querySelector('.hero');
+
+    /* ---------- 2 · Cursor-following hero aurora ----------
+       The glow's centre eases after the pointer inside the hero
+       (lerp at 0.06, so it trails softly), fades in on the first
+       move and out when the pointer leaves. The rAF loop runs
+       only while the pointer is inside and the glow is still
+       catching up or fading — never as a permanent loop. */
+    (() => {
+      const glow = document.getElementById('heroCursorGlow');
+      if (!glow || !hero || reduceMotion || !finePointer) return;
+      let tx = 0, ty = 0, cx = 0, cy = 0, targetOp = 0, op = 0, inside = false, raf = null;
+      const frame = () => {
+        cx += (tx - cx) * 0.06;
+        cy += (ty - cy) * 0.06;
+        op += (targetOp - op) * 0.08;
+        glow.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px)';
+        glow.style.opacity = op.toFixed(3);
+        const settled = Math.abs(tx - cx) < 0.4 && Math.abs(ty - cy) < 0.4 && Math.abs(targetOp - op) < 0.01;
+        if (!settled) raf = requestAnimationFrame(frame);
+        else { raf = null; if (!inside) glow.style.opacity = '0'; }
+      };
+      const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+      hero.addEventListener('pointermove', (e) => {
+        const r = hero.getBoundingClientRect();
+        tx = e.clientX - r.left; ty = e.clientY - r.top;
+        if (!inside) { cx = tx; cy = ty; inside = true; }
+        targetOp = 1;
+        kick();
+      });
+      hero.addEventListener('pointerleave', () => { inside = false; targetOp = 0; kick(); });
+    })();
+
+    /* ---------- 3 · Hero photo 3D tilt ----------
+       The portrait leans a few degrees toward the cursor, the same
+       motion as the Featured Work cards, and settles back on leave.
+       The tilt is written to .photo-ring's transform, so the
+       parallax translate offsets and the inner photo's float
+       animation keep composing underneath it. Touch and
+       reduced-motion visitors keep the plain portrait. */
+    if (finePointer && !reduceMotion) {
+      const ring = document.querySelector('.hero-card .photo-ring');
+      if (ring) {
+        const MAX = 5;
+        let raf = null, settleT = null;
+        ring.addEventListener('pointermove', (e) => {
+          const r = ring.getBoundingClientRect();
+          if (!r.width || !r.height) return;
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          if (settleT) { clearTimeout(settleT); settleT = null; }
+          if (raf) cancelAnimationFrame(raf);
+          raf = requestAnimationFrame(() => {
+            raf = null;
+            ring.classList.add('mk-tilting');
+            ring.style.transform = 'perspective(1100px) rotateX(' + (-py * MAX).toFixed(2) + 'deg) rotateY(' + (px * MAX).toFixed(2) + 'deg)';
+          });
+        });
+        const settle = () => {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          if (!ring.style.transform) return;
+          ring.style.transform = '';
+          settleT = setTimeout(() => ring.classList.remove('mk-tilting'), 190);
+        };
+        ring.addEventListener('pointerleave', settle);
+        ring.addEventListener('pointercancel', settle);
+      }
+    }
+
+    /* ---------- 4 · Save Contact (vCard) ----------
+       One click builds a .vcf from the contact details already
+       published on this page and downloads it, so the visitor's
+       phone offers to save the contact. Purely a file download —
+       nothing is sent or stored anywhere. */
+    (() => {
+      const btn = document.getElementById('saveContactBtn');
+      const label = document.getElementById('saveContactLabel');
+      if (!btn) return;
+      const VCARD = [
+        'BEGIN:VCARD',
+        'VERSION:3.0',
+        'FN:Moudud Karim',
+        'N:Karim;Moudud;;;',
+        'EMAIL;TYPE=WORK:ahmed.moududcd@gmail.com',
+        'TEL;TYPE=CELL:+8801305029637',
+        'URL:https://www.linkedin.com/in/moududkarim/',
+        'END:VCARD'
+      ].join('\r\n');
+      let resetT = null;
+      btn.addEventListener('click', () => {
+        try {
+          const blob = new Blob([VCARD], { type: 'text/vcard;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'Moudud-Karim.vcf';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+          if (label) {
+            label.textContent = 'Contact saved ✓';
+            if (resetT) clearTimeout(resetT);
+            resetT = setTimeout(() => { label.textContent = 'Save Contact'; }, 2600);
+          }
+        } catch (e) { /* download blocked — the email, LinkedIn and WhatsApp links above still reach him */ }
+      });
+    })();
   })();
 </script>
 </body>
