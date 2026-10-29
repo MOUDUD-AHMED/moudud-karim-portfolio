@@ -661,9 +661,12 @@
   }
   .copy-btn:hover{border-color:var(--accent);color:var(--ink)}
   .copy-btn:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
-  /* Copy email + Copy number stay side by side in one shared row */
-  .copy-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;align-self:center;max-width:100%}
-  .copy-row .copy-btn{flex:1 1 auto;white-space:nowrap}
+  /* All five contact actions share one row, in order: Email Me, Copy email,
+     LinkedIn, WhatsApp, Copy number — Copy number sits right beside WhatsApp.
+     The row wraps onto extra lines only where the viewport is too narrow. */
+  .contact-links{align-items:center;max-width:100%;gap:7px}
+  .contact-links a{white-space:nowrap;padding:11px 12px;font-size:14px}
+  .contact-links .copy-btn{flex:0 1 auto;white-space:nowrap;align-self:center;padding:6px 8px;font-size:12.5px}
   .copy-toast{
     position:fixed;left:50%;bottom:28px;transform:translate(-50%,16px);z-index:200;
     background:var(--grad);color:#17110a;font-weight:700;font-size:14px;
@@ -709,6 +712,7 @@
   .footer-grid a:hover{text-decoration:underline}
   .footer-grid span{display:block}
   .footer-grid p{margin:0}
+  .footer-grid span.build-stamp{display:block;margin-top:6px;font-size:12.5px;font-weight:600;letter-spacing:.03em;color:var(--accent-2)}
 
   /* ---------- Sample modal ---------- */
   .sample-modal{
@@ -1273,6 +1277,7 @@
     .dhaka-clock{font-size:12.5px}
     .contact-links{gap:8px;margin-top:18px}
     .contact-links a{font-size:13.5px;padding:10px 16px;border-radius:9px}
+    .contact-links .copy-btn{font-size:12.5px;padding:8px 13px;border-radius:9px}
     .brief-form{padding:20px;gap:10px;border-radius:14px}
     .field-row{gap:10px}
     .brief-form label{gap:4px;font-size:12px}
@@ -2067,6 +2072,165 @@
     transition:opacity .2s ease,transform .2s ease;
   }
   .dot-nav button:hover .dot-tip,.dot-nav button:focus-visible .dot-tip{opacity:1;transform:translateY(-50%) translateX(0)}
+
+  /* ================================================================
+     Six-features batch (round 2): hero industry picker, verification
+     walkthrough, sample delivery timeline, Ask-me quick chips
+     (styles above), per-service WhatsApp CTAs, rotating copper
+     gradient borders on service cards. Both themes;
+     prefers-reduced-motion respected; gradient border is
+     hover-capable pointers only, so it never runs on mobile.
+     ================================================================ */
+
+  /* ---------- 1 · Hero industry picker ---------- */
+  .lead-picker{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .lead-picker-label{
+    font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-faint);margin-right:2px;
+  }
+  .lead-chip{
+    background:var(--glass);border:1px solid var(--line-strong);color:var(--ink-soft);
+    border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+    transition:border-color .25s ease,color .25s ease,background .25s ease;
+  }
+  .lead-chip:hover{border-color:var(--accent);color:var(--ink)}
+  .lead-chip:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  .lead-chip.active{background:var(--grad);border-color:transparent;color:#17110a}
+
+  /* ---------- 2 · Verification walkthrough ---------- */
+  .verify-demo{
+    margin-top:22px;border:1px solid var(--line);border-radius:var(--radius);padding:28px;
+    background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  }
+  :root[data-theme="light"] .verify-demo{background:linear-gradient(165deg,rgba(255,255,255,.85),rgba(255,255,255,.45))}
+  .vd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+  .vd-head h3{font-size:21px;font-weight:800;margin:6px 0 8px}
+  .vd-head p{color:var(--ink-soft);font-size:15px;max-width:44em}
+  .vd-demo-tag{
+    flex:none;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent-2);background:var(--accent-soft);
+    border:1px solid rgba(224,127,63,.35);border-radius:999px;padding:6px 12px;
+  }
+  .vd-lead-card{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    border:1px solid var(--line);border-radius:12px;background:var(--glass);padding:16px 18px;margin-bottom:16px;
+  }
+  .vd-lead-info strong{display:block;font-size:16.5px;font-weight:800}
+  .vd-lead-info span{display:block;color:var(--ink-soft);font-size:13.5px;margin-top:1px}
+  .vd-lead-info .vd-email{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--accent-2);word-break:break-all}
+  .vd-status{
+    flex:none;display:inline-block;padding:4px 13px;border-radius:999px;font-size:12.5px;font-weight:700;white-space:nowrap;
+    background:var(--glass-strong);color:var(--ink-soft);border:1px solid var(--line-strong);
+  }
+  .vd-status.checking{background:rgba(224,160,63,.13);color:#dfa03c;border-color:rgba(224,160,63,.38)}
+  :root[data-theme="light"] .vd-status.checking{color:#96690f}
+  .vd-status.done{background:rgba(92,201,141,.13);color:var(--ok);border-color:rgba(92,201,141,.38)}
+  .vd-progress{height:5px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:18px}
+  .vd-progress span{display:block;height:100%;width:0;background:var(--grad);border-radius:99px;transition:width .5s ease}
+  @media (prefers-reduced-motion:reduce){.vd-progress span{transition:none}}
+  .vd-steps{list-style:none;margin:0 0 20px;padding:0;display:grid;gap:10px}
+  .vd-steps li{
+    display:flex;gap:14px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;
+    opacity:.42;transition:opacity .35s ease,border-color .35s ease,background .35s ease;
+  }
+  .vd-steps li .vd-num{
+    flex:none;width:28px;height:28px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+    border:1.5px solid var(--line-strong);color:var(--ink-soft);
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;
+  }
+  .vd-steps li strong{display:block;font-size:15.5px;font-weight:800;margin-bottom:2px}
+  .vd-steps li p{color:var(--ink-soft);font-size:14px}
+  .vd-steps li.done{opacity:.72}
+  .vd-steps li.done .vd-num{border-color:rgba(92,201,141,.5);color:var(--ok)}
+  .vd-steps li.current{opacity:1;border-color:rgba(244,184,96,.55);background:var(--accent-soft)}
+  .vd-steps li.current .vd-num{background:var(--grad);border-color:transparent;color:#17110a}
+  @media (prefers-reduced-motion:reduce){.vd-steps li{transition:none}}
+  .vd-controls{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+  .vd-count{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.1em;color:var(--ink-faint);text-transform:uppercase}
+  .vd-controls .btn[disabled]{opacity:.45;pointer-events:none}
+  @media (max-width:560px){
+    .verify-demo{padding:20px 16px}
+    .vd-steps li{padding:12px 13px}
+    .vd-controls .btn{padding:11px 16px;font-size:14px}
+  }
+
+  /* ---------- 3 · Sample delivery timeline ---------- */
+  .delivery-timeline{
+    margin-top:22px;border:1px solid var(--line);border-radius:var(--radius);padding:28px;
+    background:linear-gradient(165deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+  }
+  :root[data-theme="light"] .delivery-timeline{background:linear-gradient(165deg,rgba(255,255,255,.85),rgba(255,255,255,.45))}
+  .dt-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:24px}
+  .dt-head h3{font-size:21px;font-weight:800;margin:6px 0 8px}
+  .dt-head p{color:var(--ink-soft);font-size:15px;max-width:40em}
+  .dt-sizes{display:flex;gap:8px;flex-wrap:wrap;flex:none}
+  .dt-size{
+    background:var(--glass);border:1px solid var(--line-strong);color:var(--ink-soft);
+    border-radius:999px;padding:7px 14px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+    transition:border-color .25s ease,color .25s ease,background .25s ease;
+  }
+  .dt-size:hover{border-color:var(--accent);color:var(--ink)}
+  .dt-size:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+  .dt-size.active{background:var(--grad);border-color:transparent;color:#17110a}
+  .dt-track{height:4px;border-radius:99px;background:var(--line);margin-bottom:22px;overflow:hidden}
+  .dt-fill{display:block;height:100%;width:0;background:var(--grad);border-radius:99px}
+  .dt-nodes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .dt-node{opacity:.42;transition:opacity .45s ease}
+  .dt-node.on{opacity:1}
+  @media (prefers-reduced-motion:reduce){.dt-node{transition:none}}
+  .dt-dot{
+    display:block;width:13px;height:13px;border-radius:50%;margin-bottom:12px;
+    background:var(--bg);border:2px solid var(--accent);transition:background .3s ease,box-shadow .3s ease;
+  }
+  .dt-node.on .dt-dot{background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)}
+  .dt-day{
+    font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--accent-2);font-weight:500;
+  }
+  .dt-node strong{display:block;font-size:16px;font-weight:800;margin:4px 0 5px}
+  .dt-node p{color:var(--ink-soft);font-size:14px}
+  .dt-counter{margin-top:22px;color:var(--ink-soft);font-size:15px}
+  .dt-counter strong{
+    font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600;color:var(--ink);margin-right:5px;
+  }
+  .dt-counter-note{color:var(--ink-faint);font-size:13.5px}
+  @media (max-width:700px){
+    .delivery-timeline{padding:20px 16px}
+    .dt-nodes{grid-template-columns:1fr;gap:16px}
+  }
+
+  /* ---------- 5 · Per-service WhatsApp CTA ---------- */
+  .service-wa{
+    display:inline-flex;align-items:center;gap:7px;margin-top:16px;position:relative;z-index:1;
+    font-weight:700;font-size:14px;text-decoration:none;color:var(--accent-2);
+  }
+  .service-wa span{transition:transform .25s ease}
+  .service-wa:hover{color:var(--accent-strong);text-decoration:underline}
+  .service-wa:hover span{transform:translateX(3px)}
+  .service-wa:focus-visible{outline:2px solid var(--accent-2);outline-offset:3px;border-radius:4px}
+
+  /* ---------- 6 · Rotating copper gradient border (desktop hover) ---------- */
+  @property --gb-angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+  @media (hover:hover) and (pointer:fine){
+    .service-grid .card::after{
+      content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;z-index:2;pointer-events:none;
+      background:conic-gradient(from var(--gb-angle,0deg),
+        transparent 0deg,transparent 195deg,
+        var(--accent-deep) 262deg,var(--accent) 303deg,var(--accent-2) 338deg,transparent 360deg);
+      -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor;
+      mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+      mask-composite:exclude;
+      opacity:0;transition:opacity .35s ease;
+    }
+    .service-grid .card:hover::after,.service-grid .card:focus-within::after{
+      opacity:1;animation:gb-spin 3s linear infinite;
+    }
+    @keyframes gb-spin{to{--gb-angle:360deg}}
+  }
+  @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:reduce){
+    .service-grid .card:hover::after,.service-grid .card:focus-within::after{animation:none}
+  }
 </style>
 </head>
 <body>
@@ -2119,6 +2283,15 @@
       <div class="container">
         <div class="lead-live reveal">
           <div class="lead-live-head"><span class="live-dot" aria-hidden="true"></span><span class="lead-live-title">LIVE LIST BUILD</span><span class="lead-live-note">Watch a sample list come together — researched row by row, then verified.</span></div>
+          <div class="lead-picker" role="group" aria-label="Choose an industry to preview its sample leads">
+            <span class="lead-picker-label">Preview an industry:</span>
+            <button type="button" class="lead-chip active" data-industry="hvac" aria-pressed="true">HVAC Companies</button>
+            <button type="button" class="lead-chip" data-industry="contractors" aria-pressed="false">General Contractors</button>
+            <button type="button" class="lead-chip" data-industry="saas" aria-pressed="false">Software &amp; SaaS</button>
+            <button type="button" class="lead-chip" data-industry="healthcare" aria-pressed="false">Healthcare Suppliers</button>
+            <button type="button" class="lead-chip" data-industry="staffing" aria-pressed="false">Staffing Agencies</button>
+            <button type="button" class="lead-chip" data-industry="wholesale" aria-pressed="false">Wholesale Distributors</button>
+          </div>
           <div class="lead-table-wrap">
             <table class="lead-table" aria-label="Sample lead list being built and verified">
               <colgroup><col class="c-company"><col class="c-contact"><col class="c-title"><col class="c-email"><col class="c-status"></colgroup>
@@ -2163,13 +2336,13 @@
       <div class="container">
         <div class="section-head reveal"><div><p class="eyebrow">SERVICES</p><h2>What I can deliver for your campaign</h2></div><p>Each list is built around the client’s target market, company criteria, decision-maker roles, and required data fields.</p></div>
         <div class="cards service-grid">
-          <article class="card reveal"><span class="ghost-num">01</span><span class="service-icon">◎</span><span class="num">01</span><h3>B2B Lead Generation</h3><p>Targeted company and decision-maker research based on your industry, geography, company type, and role criteria.</p><div class="deliverable"><b>Typical fields</b><span>Company • Website • Contact • Title • LinkedIn • Email • Location</span></div></article>
-          <article class="card reveal"><span class="ghost-num">02</span><span class="service-icon">↗</span><span class="num">02</span><h3>LinkedIn Lead Generation</h3><p>Research relevant professionals and decision-makers using LinkedIn and supporting sources.</p><div class="deliverable"><b>Useful for</b><span>Owners • Founders • CEOs • Directors • Managers • Custom roles</span></div></article>
-          <article class="card reveal"><span class="ghost-num">03</span><span class="service-icon">@</span><span class="num">03</span><h3>Targeted Email List Building</h3><p>Build organized prospect lists with business contact information aligned to your outreach audience.</p><div class="deliverable"><b>Focus</b><span>Relevant prospects • Business emails • Clear spreadsheet structure</span></div></article>
-          <article class="card reveal"><span class="ghost-num">04</span><span class="service-icon">⌕</span><span class="num">04</span><h3>Web Research &amp; Data Mining</h3><p>Research companies and contacts across professional databases, search engines, websites, and directories.</p><div class="deliverable"><b>Sources</b><span>Apollo • LinkedIn • ZoomInfo • Google • Yelp • Yellow Pages</span></div></article>
-          <article class="card reveal"><span class="ghost-num">05</span><span class="service-icon">＋</span><span class="num">05</span><h3>Data Enrichment</h3><p>Fill missing information in an existing database to make it more useful for prospecting and sales activity.</p><div class="deliverable"><b>Can enrich</b><span>Job titles • Company data • Websites • LinkedIn • Emails • Locations</span></div></article>
-          <article class="card reveal"><span class="ghost-num">06</span><span class="service-icon">✓</span><span class="num">06</span><h3>Email Verification</h3><p>Check collected business emails with dedicated verification tools before final delivery.</p><div class="deliverable"><b>Tools</b><span>NeverBounce • ZeroBounce • MillionVerifier • Verifalia • MailTester</span></div></article>
-          <article class="card reveal"><span class="ghost-num">07</span><span class="service-icon">✉</span><span class="num">07</span><h3>Cold Email Outreach</h3><p>Targeted cold email campaign setup and execution designed to turn relevant prospect lists into qualified B2B conversations.</p><div class="deliverable"><b>Includes</b><span>Prospect segmentation • Personalized messaging • Campaign management • Performance tracking</span></div></article>
+          <article class="card reveal"><span class="ghost-num">01</span><span class="service-icon">◎</span><span class="num">01</span><h3>B2B Lead Generation</h3><p>Targeted company and decision-maker research based on your industry, geography, company type, and role criteria.</p><div class="deliverable"><b>Typical fields</b><span>Company • Website • Contact • Title • LinkedIn • Email • Location</span></div><a class="service-wa" href="https://wa.me/8801305029637?text=Hi%20Moudud%2C%20I%27m%20interested%20in%20your%20B2B%20Lead%20Generation%20service.%20Could%20we%20discuss%20my%20project%3F" target="_blank" rel="noopener" aria-label="Discuss B2B Lead Generation on WhatsApp">Discuss this service on WhatsApp <span aria-hidden="true">→</span></a></article>
+          <article class="card reveal"><span class="ghost-num">02</span><span class="service-icon">↗</span><span class="num">02</span><h3>LinkedIn Lead Generation</h3><p>Research relevant professionals and decision-makers using LinkedIn and supporting sources.</p><div class="deliverable"><b>Useful for</b><span>Owners • Founders • CEOs • Directors • Managers • Custom roles</span></div><a class="service-wa" href="https://wa.me/8801305029637?text=Hi%20Moudud%2C%20I%27m%20interested%20in%20your%20LinkedIn%20Lead%20Generation%20service.%20Could%20we%20discuss%20my%20project%3F" target="_blank" rel="noopener" aria-label="Discuss LinkedIn Lead Generation on WhatsApp">Discuss this service on WhatsApp <span aria-hidden="true">→</span></a></article>
+          <article class="card reveal"><span class="ghost-num">03</span><span class="service-icon">@</span><span class="num">03</span><h3>Targeted Email List Building</h3><p>Build organized prospect lists with business contact information aligned to your outreach audience.</p><div class="deliverable"><b>Focus</b><span>Relevant prospects • Business emails • Clear spreadsheet structure</span></div><a class="service-wa" href="https://wa.me/8801305029637?text=Hi%20Moudud%2C%20I%27m%20interested%20in%20your%20Targeted%20Email%20List%20Building%20service.%20Could%20we%20discuss%20my%20project%3F" target="_blank" rel="noopener" aria-label="Discuss Targeted Email List Building on WhatsApp">Discuss this service on WhatsApp <span aria-hidden="true">→</span></a></article>
+          <article class="card reveal"><span class="ghost-num">04</span><span class="service-icon">⌕</span><span class="num">04</span><h3>Web Research &amp; Data Mining</h3><p>Research companies and contacts across professional databases, search engines, websites, and directories.</p><div class="deliverable"><b>Sources</b><span>Apollo • LinkedIn • ZoomInfo • Google • Yelp • Yellow Pages</span></div><a class="service-wa" href="https://wa.me/8801305029637?text=Hi%20Moudud%2C%20I%27m%20interested%20in%20your%20Web%20Research%20%26%20Data%20Mining%20service.%20Could%20we%20discuss%20my%20project%3F" target="_blank" rel="noopener" aria-label="Discuss Web Research and Data Mining on WhatsApp">Discuss this service on WhatsApp <span aria-hidden="true">→</span></a></article>
+          <article class="card reveal"><span class="ghost-num">05</span><span class="service-icon">＋</span><span class="num">05</span><h3>Data Enrichment</h3><p>Fill missing information in an existing database to make it more useful for prospecting and sales activity.</p><div class="deliverable"><b>Can enrich</b><span>Job titles • Company data • Websites • LinkedIn • Emails • Locations</span></div><a class="service-wa" href="https://wa.me/8801305029637?text=Hi%20Moudud%2C%20I%27m%20interested%20in%20your%20Data%20Enrichment%20service.%20Could%20we%20discuss%20my%20project%3F" target="_blank" rel="noopener" aria-label="Discuss Data Enrichment on WhatsApp">Discuss this service on WhatsApp <span aria-hidden="true">→</span></a></article>
+          <article class="card reveal"><span class="ghost-num">06</span><span class="service-icon">✓</span><span class="num">06</span><h3>Email Verification</h3><p>Check collected business emails with dedicated verification tools before final delivery.</p><div class="deliverable"><b>Tools</b><span>NeverBounce • ZeroBounce • MillionVerifier • Verifalia • MailTester</span></div><a class="service-wa" href="https://wa.me/8801305029637?text=Hi%20Moudud%2C%20I%27m%20interested%20in%20your%20Email%20Verification%20service.%20Could%20we%20discuss%20my%20project%3F" target="_blank" rel="noopener" aria-label="Discuss Email Verification on WhatsApp">Discuss this service on WhatsApp <span aria-hidden="true">→</span></a></article>
+          <article class="card reveal"><span class="ghost-num">07</span><span class="service-icon">✉</span><span class="num">07</span><h3>Cold Email Outreach</h3><p>Targeted cold email campaign setup and execution designed to turn relevant prospect lists into qualified B2B conversations.</p><div class="deliverable"><b>Includes</b><span>Prospect segmentation • Personalized messaging • Campaign management • Performance tracking</span></div><a class="service-wa" href="https://wa.me/8801305029637?text=Hi%20Moudud%2C%20I%27m%20interested%20in%20your%20Cold%20Email%20Outreach%20service.%20Could%20we%20discuss%20my%20project%3F" target="_blank" rel="noopener" aria-label="Discuss Cold Email Outreach on WhatsApp">Discuss this service on WhatsApp <span aria-hidden="true">→</span></a></article>
         </div>
         <div class="related-service-band reveal">
           <div class="related-service-copy">
@@ -2254,6 +2427,37 @@
           <div class="j-stage"><span class="j-icon" aria-hidden="true">✓</span><h3><span class="j-step-num">STEP 2</span>Verify</h3><p>Collected business emails are checked with dedicated verification tools, and the targeting is reviewed before anything is delivered.</p><div class="j-tags"><span>NeverBounce</span><span>ZeroBounce</span><span>MillionVerifier</span><span>Verifalia</span><span>MailTester</span></div></div>
           <div class="j-link" aria-hidden="true"><span class="j-link-fill"></span></div>
           <div class="j-stage"><span class="j-icon" aria-hidden="true">✉</span><h3><span class="j-step-num">STEP 3</span>Deliver</h3><p>You receive a clean, organized spreadsheet with the fields your campaign needs — structured and ready for outreach.</p><div class="j-tags"><span>Company</span><span>Contact</span><span>Title</span><span>Email</span><span>LinkedIn</span><span>Location</span></div></div>
+        </div>
+        <div class="verify-demo reveal" id="verifyDemo">
+          <div class="vd-head">
+            <div>
+              <span class="related-service-label">INTERACTIVE DEMO</span>
+              <h3>Watch one email get verified, step by step</h3>
+              <p>Every lead passes the same checks before delivery. Click through the steps to follow one demo lead from research to a clean, verified list.</p>
+            </div>
+            <span class="vd-demo-tag">Demo lead — sample data</span>
+          </div>
+          <div class="vd-lead-card">
+            <div class="vd-lead-info">
+              <strong>Daniel Carter</strong>
+              <span>Owner — Summit Ridge HVAC LLC</span>
+              <span class="vd-email">daniel.carter@summitridgehvac.com</span>
+            </div>
+            <span class="vd-status" id="vdStatus">Not checked yet</span>
+          </div>
+          <div class="vd-progress" aria-hidden="true"><span id="vdProgressFill"></span></div>
+          <ol class="vd-steps" id="vdSteps">
+            <li><span class="vd-num" aria-hidden="true">1</span><div><strong>Prospect researched</strong><p>The company and its decision-maker are researched across LinkedIn, Apollo, ZoomInfo, company websites, Google and directories, then matched against the targeting criteria.</p></div></li>
+            <li><span class="vd-num" aria-hidden="true">2</span><div><strong>Business email collected</strong><p>The decision-maker's business email is found and added to the lead record, alongside the company, title and LinkedIn details.</p></div></li>
+            <li><span class="vd-num" aria-hidden="true">3</span><div><strong>Checked with a verification tool</strong><p>The address is run through a dedicated verifier — NeverBounce, ZeroBounce, MillionVerifier, Verifalia or MailTester, depending on the project.</p></div></li>
+            <li><span class="vd-num" aria-hidden="true">4</span><div><strong>Result confirmed</strong><p>The check comes back clean, so this lead's status flips to ✓ Verified — the same status you can watch in the live list build in the hero above.</p></div></li>
+            <li><span class="vd-num" aria-hidden="true">5</span><div><strong>Final QA &amp; delivery</strong><p>Targeting and formatting are reviewed one last time, and the verified lead takes its place in the clean, organized spreadsheet you receive.</p></div></li>
+          </ol>
+          <div class="vd-controls">
+            <button class="btn secondary" type="button" id="vdPrev" disabled>← Back</button>
+            <span class="vd-count" id="vdCount" role="status">Not started</span>
+            <button class="btn primary" type="button" id="vdNext">Start the walkthrough →</button>
+          </div>
         </div>
       </div>
     </section>
@@ -2368,6 +2572,42 @@
           </div>
           <p class="calc-note">Final timeline confirmed after reviewing your targeting criteria.</p>
         </div>
+        <div class="delivery-timeline reveal" id="deliveryTimeline">
+          <div class="dt-head">
+            <div>
+              <span class="related-service-label">SAMPLE DELIVERY TIMELINE</span>
+              <h3>How an order moves from Day 1 to delivery</h3>
+              <p>Planned at roughly 200 verified leads per day — the same rate behind the estimate above. Pick an order size to see its day-by-day path.</p>
+            </div>
+            <div class="dt-sizes" role="group" aria-label="Choose an order size">
+              <button type="button" class="dt-size" data-leads="500" aria-pressed="false">500 leads</button>
+              <button type="button" class="dt-size active" data-leads="1000" aria-pressed="true">1,000 leads</button>
+              <button type="button" class="dt-size" data-leads="2000" aria-pressed="false">2,000 leads</button>
+            </div>
+          </div>
+          <div class="dt-track" aria-hidden="true"><span class="dt-fill" id="dtFill"></span></div>
+          <div class="dt-nodes">
+            <div class="dt-node">
+              <span class="dt-dot" aria-hidden="true"></span>
+              <span class="dt-day">Day 1</span>
+              <strong>Kickoff &amp; research</strong>
+              <p>Targeting criteria confirmed — industry, location, company type and decision-maker titles — and research begins across multiple sources.</p>
+            </div>
+            <div class="dt-node">
+              <span class="dt-dot" aria-hidden="true"></span>
+              <span class="dt-day" id="dtDayMid">Day 3</span>
+              <strong>Building &amp; verifying</strong>
+              <p id="dtMidText">About 600 leads researched, enriched and verified by this point, at roughly 200 per day.</p>
+            </div>
+            <div class="dt-node">
+              <span class="dt-dot" aria-hidden="true"></span>
+              <span class="dt-day" id="dtDayEnd">Day 5</span>
+              <strong>Final QA &amp; delivery</strong>
+              <p id="dtEndText">All 1,000 verified leads pass a final targeting and formatting review, then arrive as a clean, organized spreadsheet.</p>
+            </div>
+          </div>
+          <p class="dt-counter"><strong id="dtCount">0</strong> verified leads delivered<span class="dt-counter-note"> — final timeline confirmed after reviewing your targeting criteria.</span></p>
+        </div>
       </div>
     </section>
 
@@ -2415,7 +2655,7 @@
 
     <section class="section sample-section dark-contact" id="sample" data-wm="SAMPLE">
       <div class="container sample-grid">
-        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><p class="dhaka-clock mono">Bangladesh time: <span id="dhakaTime">—</span></p></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><div class="copy-row"><button class="copy-btn" type="button" data-copy="ahmed.moududcd@gmail.com" aria-label="Copy email address ahmed.moududcd@gmail.com">Copy email</button><button class="copy-btn" type="button" data-copy="+8801305029637" aria-label="Copy WhatsApp number +8801305029637">Copy number</button></div><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a></div></div>
+        <div class="reveal"><p class="eyebrow">FREE SAMPLE</p><h2>Want to check the data quality first?</h2><p>Send me your target industry, location, decision-maker criteria, and approximate list size. I can prepare a small sample so you can review the structure and relevance before discussing a larger project.</p><div class="contact-status"><p class="booking-line"><span class="booking-dot" aria-hidden="true"></span><span id="bookingText">Now booking projects</span></p><p class="dhaka-clock mono">Bangladesh time: <span id="dhakaTime">—</span></p></div><div class="contact-links"><a href="mailto:ahmed.moududcd@gmail.com">Email Me</a><button class="copy-btn" type="button" data-copy="ahmed.moududcd@gmail.com" aria-label="Copy email address ahmed.moududcd@gmail.com">Copy email</button><a href="https://www.linkedin.com/in/moududkarim/" target="_blank" rel="noopener">LinkedIn</a><a href="https://wa.me/8801305029637" target="_blank" rel="noopener">WhatsApp</a><button class="copy-btn" type="button" data-copy="+8801305029637" aria-label="Copy WhatsApp number +8801305029637">Copy number</button></div></div>
         <form class="brief-form reveal" id="briefForm" action="https://formspree.io/f/xbgdvznw" method="POST">
           <div class="form-progress" aria-hidden="true"><span class="fp-step is-current" id="fpStep1">STEP 1</span><span class="fp-bar"><span class="fp-fill" id="fpFill"></span></span><span class="fp-step" id="fpStep2">STEP 2</span><span class="fp-bar"><span class="fp-fill" id="fpFill2"></span></span><span class="fp-step" id="fpStep3">STEP 3</span></div>
           <p class="wizard-step-text" id="wizardStepText" role="status">Step 1 of 3 — Project details</p>
@@ -2449,7 +2689,7 @@
     </section>
   </main>
 
-  <footer><div class="container footer-grid"><div><strong>Moudud Karim</strong><p>B2B Lead Generation &amp; Prospect List Building Expert</p><span class="signature" id="signatureName" aria-hidden="true">Moudud Karim</span></div><div><a href="mailto:ahmed.moududcd@gmail.com">ahmed.moududcd@gmail.com</a><span>Jashore, Khulna, Bangladesh</span></div><p>© <span id="year"></span> Moudud Karim. All rights reserved.</p></div><div class="footer-giant" aria-hidden="true">MOUDUD KARIM</div></footer>
+  <footer><div class="container footer-grid"><div><strong>Moudud Karim</strong><p>B2B Lead Generation &amp; Prospect List Building Expert</p><span class="signature" id="signatureName" aria-hidden="true">Moudud Karim</span></div><div><a href="mailto:ahmed.moududcd@gmail.com">ahmed.moududcd@gmail.com</a><span>Jashore, Khulna, Bangladesh</span></div><p>© <span id="year"></span> Moudud Karim. All rights reserved.<span class="build-stamp">Updated: 29 Oct 2026</span></p></div><div class="footer-giant" aria-hidden="true">MOUDUD KARIM</div></footer>
   <button class="to-top" id="toTop" type="button" aria-label="Scroll to bottom"><svg viewBox="0 0 48 48" aria-hidden="true"><circle class="tt-track" cx="24" cy="24" r="20"/><circle class="tt-ring" id="toTopRing" cx="24" cy="24" r="20" transform="rotate(-90 24 24)"/><path class="tt-arrow tt-arrow-down" id="toTopArrow" d="M24 30.5v-13M17.8 23.2L24 17l6.2 6.2" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   <a class="wa-float" href="https://wa.me/8801305029637" target="_blank" rel="noopener" aria-label="Chat with Moudud Karim on WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg></a>
   <nav class="dot-nav" id="dotNav" aria-label="Page sections">
@@ -2519,6 +2759,7 @@
       <button type="button" data-q="How long does delivery take?">How long does delivery take?</button>
       <button type="button" data-q="How do you verify emails?">How do you verify emails?</button>
       <button type="button" data-q="Can I get a free sample?">Can I get a free sample?</button>
+      <button type="button" data-q="What fields are included?">What fields are included?</button>
       <button type="button" data-q="What does it cost?">What does it cost?</button>
     </div>
     <form class="ask-form" id="askForm">
@@ -3371,21 +3612,75 @@
 
   // Hero live lead-list — sample rows arrive one by one and flip to
   // "✓ Verified"; the cycle restarts while the panel is on screen.
+  // The industry picker above the table swaps in that industry's demo
+  // rows and restarts the cycle with them. All rows are sample data.
   (() => {
     const tbody = document.getElementById('leadRows');
     if (!tbody) return;
-    const ROWS = [
-      ['Summit Ridge HVAC LLC', 'Daniel Carter', 'Owner', 'daniel.carter@summitridgehvac.com'],
-      ['BrightBuild Construction', 'Sarah Lee', 'VP of Operations', 'sarah.lee@brightbuild.com'],
-      ['Northgate Plumbing Co.', 'Mike Reynolds', 'Operations Manager', 'mike.reynolds@northgateplumbing.com'],
-      ['Apex Mechanical Group', 'Laura Bennett', 'President', 'laura.bennett@apexmechanical.com'],
-      ['ClearPath Distributors', 'James Ortiz', 'Managing Director', 'j.ortiz@clearpathdist.com']
-    ];
+    const DATASETS = {
+      hvac: [
+        ['Summit Ridge HVAC LLC', 'Daniel Carter', 'Owner', 'daniel.carter@summitridgehvac.com'],
+        ['BrightBuild Construction', 'Sarah Lee', 'VP of Operations', 'sarah.lee@brightbuild.com'],
+        ['Northgate Plumbing Co.', 'Mike Reynolds', 'Operations Manager', 'mike.reynolds@northgateplumbing.com'],
+        ['Apex Mechanical Group', 'Laura Bennett', 'President', 'laura.bennett@apexmechanical.com'],
+        ['ClearPath Distributors', 'James Ortiz', 'Managing Director', 'j.ortiz@clearpathdist.com']
+      ],
+      contractors: [
+        ['Ironclad Builders Inc.', 'Tom Becker', 'Owner', 'tom.becker@ironcladbuilders.com'],
+        ['Keystone Construction Group', 'Rachel Nguyen', 'President', 'rachel.nguyen@keystoneconstruction.com'],
+        ['BluePeak Contracting', 'Chris Dalton', 'Managing Partner', 'c.dalton@bluepeakcontracting.com'],
+        ['Hartwell Design-Build', 'Emma Sullivan', 'CEO', 'emma.sullivan@hartwelldb.com'],
+        ['Redwood Commercial Builders', 'David Kim', 'Founder', 'david.kim@redwoodcommercial.com']
+      ],
+      saas: [
+        ['CloudNest Software', 'Priya Sharma', 'CEO', 'priya.sharma@cloudnest.io'],
+        ['Loopwire Systems', 'Marcus Webb', 'Founder', 'marcus.webb@loopwire.com'],
+        ['Datahaven Labs', 'Anna Fischer', 'VP of Sales', 'anna.fischer@datahavenlabs.com'],
+        ['Metricsly Inc.', 'Jordan Blake', 'President', 'jordan.blake@metricsly.com'],
+        ['Northbeam Analytics', 'Sofia Marino', 'Co-Founder', 'sofia.marino@northbeam.io']
+      ],
+      healthcare: [
+        ['MedSupply Partners', 'Karen Doyle', 'President', 'karen.doyle@medsupplypartners.com'],
+        ['CarePoint Distribution', 'Robert Hale', 'Owner', 'robert.hale@carepointdist.com'],
+        ['VitalEdge Medical', 'Lisa Tran', 'Managing Director', 'lisa.tran@vitaledgemedical.com'],
+        ['Summit Health Logistics', 'Paul Mercer', 'CEO', 'paul.mercer@summithealthlog.com'],
+        ['BrightCare Supplies', 'Nina Alvarez', 'Founder', 'nina.alvarez@brightcaresupplies.com']
+      ],
+      staffing: [
+        ['TalentBridge Staffing', 'Megan Foster', 'Owner', 'megan.foster@talentbridgestaffing.com'],
+        ['Pinnacle Workforce Group', 'Steven Cole', 'President', 'steven.cole@pinnacleworkforce.com'],
+        ['HireQuest Partners', 'Alicia Grant', 'CEO', 'alicia.grant@hirequestpartners.com'],
+        ['NorthStar Recruiting', 'Brian Doyle', 'Managing Partner', 'brian.doyle@northstarrecruiting.com'],
+        ['SwiftHire Solutions', 'Carla Mendes', 'Founder', 'carla.mendes@swifthire.com']
+      ],
+      wholesale: [
+        ['Meridian Wholesale Group', 'George Lane', 'Owner', 'george.lane@meridianwholesale.com'],
+        ['Atlas Distribution Co.', 'Helen Brooks', 'President', 'helen.brooks@atlasdist.com'],
+        ['PrimeSource Wholesale', 'Victor Chen', 'Managing Director', 'victor.chen@primesourcewholesale.com'],
+        ['Gateway Supply Partners', 'Dana Wright', 'CEO', 'dana.wright@gatewaysupply.com'],
+        ['Union Wholesale Ltd', 'Omar Haddad', 'Founder', 'omar.haddad@unionwholesale.com']
+      ]
+    };
+    let ROWS = DATASETS.hvac;
+    const chips = [...document.querySelectorAll('.lead-chip[data-industry]')];
     const rowHtml = (r, done) =>
       '<td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td class="col-email">' + r[3] + '</td><td>' +
       (done ? '<span class="lead-status done">✓ Verified</span>' : '<span class="lead-status checking">Checking…</span>') + '</td>';
+    const setActiveChip = (active) => chips.forEach(c => {
+      const on = c === active;
+      c.classList.toggle('active', on);
+      c.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      tbody.innerHTML = ROWS.map(r => '<tr>' + rowHtml(r, true) + '</tr>').join('');
+      const renderStatic = () => { tbody.innerHTML = ROWS.map(r => '<tr>' + rowHtml(r, true) + '</tr>').join(''); };
+      renderStatic();
+      chips.forEach(chip => chip.addEventListener('click', () => {
+        const next = DATASETS[chip.getAttribute('data-industry')];
+        if (!next) return;
+        ROWS = next;
+        setActiveChip(chip);
+        renderStatic();
+      }));
       return;
     }
     let timers = [], running = false, visible = false;
@@ -3407,6 +3702,15 @@
     };
     const start = () => { if (!running) { running = true; runCycle(); } };
     const stop = () => { running = false; clearTimers(); };
+    chips.forEach(chip => chip.addEventListener('click', () => {
+      const next = DATASETS[chip.getAttribute('data-industry')];
+      if (!next || next === ROWS) return;
+      ROWS = next;
+      setActiveChip(chip);
+      clearTimers();
+      tbody.innerHTML = '';
+      if (running) runCycle();
+    }));
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver(es => es.forEach(en => {
         visible = en.isIntersecting;
@@ -3910,14 +4214,107 @@
      anything unknown are handed to the contact form / WhatsApp.
      ================================================================ */
 
-  // 6b · Theme favicon — swap the tab icon with the theme.
-  window.__mkSyncFavicon = () => {
+  // 6b · Animated theme favicon — Chrome does not animate favicons on its
+  // own, so the MK tab icon is animated by cycling small canvas frames: the
+  // theme's MK tile is redrawn with a copper shimmer sweeping the monogram
+  // and each frame is swapped into the favicon link at a low frame rate
+  // (~9 fps on a 64px canvas — negligible cost). The loop pauses while the
+  // tab is in the background, restarts on return, follows theme changes,
+  // and never starts under prefers-reduced-motion (the static SVG variant
+  // is shown instead, exactly as before).
+  (() => {
     const link = document.getElementById('favicon');
     if (!link) return;
-    const light = document.documentElement.getAttribute('data-theme') === 'light';
-    link.setAttribute('href', light ? 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmZmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2YxZTdkYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNlODliM2MiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjU1IiBzdG9wLWNvbG9yPSIjY2Y2ZjI0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2EzNGExMiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIzMCIgZmlsbD0idXJsKCNiZykiLz4KICA8cGF0aCBkPSJNMjcgODdWNDFoMTBsMTcgMjQgMTctMjRoMTB2NDZINjlWNjBMNTQgODEgMzkgNjB2MjdIMjdaIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTgzIDQxaDEydjE4bDE1LTE4aDE1bC0xOSAyMiAyMCAyNGgtMTVMOTUgNjh2MTlIODNWNDFaIiBmaWxsPSJ1cmwoI2cpIi8+Cjwvc3ZnPgo=' : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMTYyMjJlIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzBiMTIxOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmNGI4NjAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjU1IiBzdG9wLWNvbG9yPSIjZTA3ZjNmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M2NWExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIzMCIgZmlsbD0idXJsKCNiZykiLz4KICA8cGF0aCBkPSJNMjcgODdWNDFoMTBsMTcgMjQgMTctMjRoMTB2NDZINjlWNjBMNTQgODEgMzkgNjB2MjdIMjdaIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTgzIDQxaDEydjE4bDE1LTE4aDE1bC0xOSAyMiAyMCAyNGgtMTVMOTUgNjh2MTlIODNWNDFaIiBmaWxsPSJ1cmwoI2cpIi8+Cjwvc3ZnPgo=');
-  };
-  window.__mkSyncFavicon();
+    const PALETTES = {
+      dark:  { bg0: '#16222e', bg1: '#0b1219', g0: '#f4b860', g1: '#e07f3f', g2: '#c65a1c' },
+      light: { bg0: '#ffffff', bg1: '#f1e7da', g0: '#e89b3c', g1: '#cf6f24', g2: '#a34a12' }
+    };
+    const FRAMES = 18, INTERVAL = 110;
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let canvas = null, ctx = null, letters = null;
+    let timer = null, frame = 0;
+
+    const isLight = () => document.documentElement.getAttribute('data-theme') === 'light';
+    const setStatic = () => {
+      link.setAttribute('type', 'image/svg+xml');
+      link.setAttribute('href', isLight() ? 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmZmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2YxZTdkYSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNlODliM2MiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjU1IiBzdG9wLWNvbG9yPSIjY2Y2ZjI0Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2EzNGExMiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIzMCIgZmlsbD0idXJsKCNiZykiLz4KICA8cGF0aCBkPSJNMjcgODdWNDFoMTBsMTcgMjQgMTctMjRoMTB2NDZINjlWNjBMNTQgODEgMzkgNjB2MjdIMjdaIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTgzIDQxaDEydjE4bDE1LTE4aDE1bC0xOSAyMiAyMCAyNGgtMTVMOTUgNjh2MTlIODNWNDFaIiBmaWxsPSJ1cmwoI2cpIi8+Cjwvc3ZnPgo=' : 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMjggMTI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWxsZWRieT0idGl0bGUiPgogIDx0aXRsZSBpZD0idGl0bGUiPk1LIG1vbm9ncmFtPC90aXRsZT4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYmciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMTYyMjJlIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzBiMTIxOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMSIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmNGI4NjAiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjU1IiBzdG9wLWNvbG9yPSIjZTA3ZjNmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2M2NWExYyIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPHJlY3Qgd2lkdGg9IjEyOCIgaGVpZ2h0PSIxMjgiIHJ4PSIzMCIgZmlsbD0idXJsKCNiZykiLz4KICA8cGF0aCBkPSJNMjcgODdWNDFoMTBsMTcgMjQgMTctMjRoMTB2NDZINjlWNjBMNTQgODEgMzkgNjB2MjdIMjdaIiBmaWxsPSJ1cmwoI2cpIi8+CiAgPHBhdGggZD0iTTgzIDQxaDEydjE4bDE1LTE4aDE1bC0xOSAyMiAyMCAyNGgtMTVMOTUgNjh2MTlIODNWNDFaIiBmaWxsPSJ1cmwoI2cpIi8+Cjwvc3ZnPgo=');
+    };
+    const tilePath = () => {
+      const p = new Path2D();
+      const r = 30;
+      p.moveTo(r, 0);
+      p.lineTo(128 - r, 0); p.arcTo(128, 0, 128, r, r);
+      p.lineTo(128, 128 - r); p.arcTo(128, 128, 128 - r, 128, r);
+      p.lineTo(r, 128); p.arcTo(0, 128, 0, 128 - r, r);
+      p.lineTo(0, r); p.arcTo(0, 0, r, 0, r);
+      p.closePath();
+      return p;
+    };
+    const ensureCanvas = () => {
+      if (ctx) return true;
+      try {
+        canvas = document.createElement('canvas');
+        canvas.width = 64; canvas.height = 64;
+        ctx = canvas.getContext('2d');
+        if (!ctx) return false;
+        letters = new Path2D();
+        letters.addPath(new Path2D('M27 87V41h10l17 24 17-24h10v46H69V60L54 81 39 60v27H27Z'));
+        letters.addPath(new Path2D('M83 41h12v18l15-18h15l-19 22 20 24h-15L95 68v19H83V41Z'));
+        return true;
+      } catch (e) { return false; }
+    };
+    const band = (cx, alpha) => {
+      ctx.save();
+      ctx.translate(cx, 64);
+      ctx.rotate(-0.42);
+      const g = ctx.createLinearGradient(-16, 0, 16, 0);
+      g.addColorStop(0, 'rgba(255,238,205,0)');
+      g.addColorStop(0.5, 'rgba(255,238,205,' + alpha + ')');
+      g.addColorStop(1, 'rgba(255,238,205,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(-16, -90, 32, 180);
+      ctx.restore();
+    };
+    const drawFrame = (f) => {
+      const pal = isLight() ? PALETTES.light : PALETTES.dark;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, 64, 64);
+      ctx.scale(0.5, 0.5);
+      const tile = tilePath();
+      const bg = ctx.createLinearGradient(0, 0, 128, 128);
+      bg.addColorStop(0, pal.bg0); bg.addColorStop(1, pal.bg1);
+      ctx.fillStyle = bg; ctx.fill(tile);
+      const lg = ctx.createLinearGradient(0, 0, 128, 128);
+      lg.addColorStop(0, pal.g0); lg.addColorStop(0.55, pal.g1); lg.addColorStop(1, pal.g2);
+      ctx.fillStyle = lg; ctx.fill(letters);
+      const cx = -50 + (f / FRAMES) * 228;
+      ctx.save(); ctx.clip(tile); band(cx, 0.16); ctx.restore();
+      ctx.save(); ctx.clip(letters); band(cx, 0.85); ctx.restore();
+      link.setAttribute('type', 'image/png');
+      link.setAttribute('href', canvas.toDataURL('image/png'));
+    };
+    const step = () => { drawFrame(frame); frame = (frame + 1) % FRAMES; };
+    const start = () => {
+      if (timer || motionQuery.matches || document.hidden) return;
+      if (!ensureCanvas()) { setStatic(); return; }
+      try { step(); timer = setInterval(step, INTERVAL); }
+      catch (e) { stop(); setStatic(); }
+    };
+    const stop = () => { if (timer) { clearInterval(timer); timer = null; } };
+    window.__mkSyncFavicon = () => {
+      if (motionQuery.matches) { stop(); setStatic(); return; }
+      if (timer) { try { drawFrame(frame); } catch (e) { stop(); setStatic(); } }
+      else start();
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else if (!motionQuery.matches) start();
+    });
+    if (typeof motionQuery.addEventListener === 'function') {
+      motionQuery.addEventListener('change', () => window.__mkSyncFavicon());
+    }
+    window.__mkSyncFavicon();
+  })();
 
   // Section jumping shared by the palette — same lock + hash behaviour
   // as the in-page anchor handler, so the scroll spy stays in sync.
@@ -4780,6 +5177,133 @@
       document.addEventListener('mk:navsync', request);
       update();
     })();
+  })();
+</script>
+<script>
+  /* ================================================================
+     Six-features batch (round 2): verification walkthrough +
+     sample delivery timeline. (The industry picker lives with the
+     hero lead-list script; Ask-me chips, per-service WhatsApp CTAs
+     and the gradient card borders are markup + CSS only.)
+     ================================================================ */
+
+  // 2 · Verification walkthrough — the visitor clicks through the
+  // checks one demo lead passes between research and delivery. Every
+  // step restates the process already described on this page; the
+  // status pill mirrors the hero list's Checking… → ✓ Verified flip.
+  (() => {
+    const root = document.getElementById('verifyDemo');
+    if (!root) return;
+    const steps = [...root.querySelectorAll('.vd-steps li')];
+    const status = document.getElementById('vdStatus');
+    const fill = document.getElementById('vdProgressFill');
+    const prev = document.getElementById('vdPrev');
+    const next = document.getElementById('vdNext');
+    const count = document.getElementById('vdCount');
+    if (!steps.length || !status || !next || !prev) return;
+    const STATUS = ['Not checked yet', 'Researched', 'Email collected', 'Checking…', '✓ Verified', '✓ Verified — ready to deliver'];
+    let cur = -1; // -1 = not started; 0..4 = current step index
+    const render = () => {
+      steps.forEach((li, i) => {
+        li.classList.toggle('done', i < cur);
+        li.classList.toggle('current', i === cur);
+      });
+      const s = STATUS[cur + 1];
+      status.textContent = s;
+      status.classList.toggle('checking', cur === 2);
+      status.classList.toggle('done', cur >= 3);
+      if (fill) fill.style.width = ((cur + 1) / steps.length * 100) + '%';
+      if (count) count.textContent = cur < 0 ? 'Not started' : 'Step ' + (cur + 1) + ' of ' + steps.length;
+      prev.disabled = cur < 0;
+      next.textContent = cur < 0 ? 'Start the walkthrough →'
+        : cur >= steps.length - 1 ? 'Restart ↺' : 'Next step →';
+    };
+    next.addEventListener('click', () => {
+      cur = cur >= steps.length - 1 ? -1 : cur + 1;
+      render();
+    });
+    prev.addEventListener('click', () => {
+      if (cur >= 0) { cur--; render(); }
+    });
+    render();
+  })();
+
+  // 3 · Sample delivery timeline — an order's path from Day 1 to
+  // delivery, planned at the ~200 verified leads per day rate the
+  // Lead Calculator above already uses (days = ceil(leads / 200)).
+  // Size buttons re-plan the timeline and replay the animation.
+  (() => {
+    const root = document.getElementById('deliveryTimeline');
+    if (!root) return;
+    const fill = document.getElementById('dtFill');
+    const count = document.getElementById('dtCount');
+    const dayMid = document.getElementById('dtDayMid');
+    const midText = document.getElementById('dtMidText');
+    const dayEnd = document.getElementById('dtDayEnd');
+    const endText = document.getElementById('dtEndText');
+    const nodes = [...root.querySelectorAll('.dt-node')];
+    const sizeBtns = [...root.querySelectorAll('.dt-size')];
+    if (!fill || !count || !nodes.length) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fmt = (n) => n.toLocaleString('en-US');
+    let leads = 1000, raf = null, timers = [];
+    const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+    const apply = (n) => {
+      leads = n;
+      const days = Math.max(1, Math.ceil(n / 200));
+      const midDay = Math.min(days, Math.max(2, Math.ceil(days / 2)));
+      const midCount = Math.min(n, midDay * 200);
+      if (dayMid) dayMid.textContent = 'Day ' + midDay;
+      if (midText) midText.textContent = 'About ' + fmt(midCount) + ' leads researched, enriched and verified by this point, at roughly 200 per day.';
+      if (dayEnd) dayEnd.textContent = 'Day ' + days;
+      if (endText) endText.textContent = 'All ' + fmt(n) + ' verified leads pass a final targeting and formatting review, then arrive as a clean, organized spreadsheet.';
+    };
+    const play = () => {
+      clearTimers();
+      if (raf) cancelAnimationFrame(raf);
+      nodes.forEach(nd => nd.classList.remove('on'));
+      fill.style.transition = 'none';
+      fill.style.width = '0%';
+      count.textContent = '0';
+      if (reduceMotion) {
+        fill.style.width = '100%';
+        nodes.forEach(nd => nd.classList.add('on'));
+        count.textContent = fmt(leads);
+        return;
+      }
+      void fill.offsetWidth;
+      fill.style.transition = 'width 2.2s cubic-bezier(.4,0,.2,1)';
+      fill.style.width = '100%';
+      nodes[0].classList.add('on');
+      if (nodes[1]) timers.push(setTimeout(() => nodes[1].classList.add('on'), 950));
+      if (nodes[2]) timers.push(setTimeout(() => nodes[2].classList.add('on'), 1950));
+      const target = leads, dur = 2200, t0 = performance.now();
+      const tickCount = (t) => {
+        const p = Math.min(1, (t - t0) / dur);
+        count.textContent = fmt(Math.round(target * p));
+        if (p < 1) raf = requestAnimationFrame(tickCount);
+      };
+      raf = requestAnimationFrame(tickCount);
+    };
+    sizeBtns.forEach(btn => btn.addEventListener('click', () => {
+      const n = parseInt(btn.getAttribute('data-leads'), 10);
+      if (!n || n === leads && btn.classList.contains('active')) return;
+      sizeBtns.forEach(b => {
+        const on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      apply(n);
+      play();
+    }));
+    apply(1000);
+    if ('IntersectionObserver' in window) {
+      let played = false;
+      const io = new IntersectionObserver(es => es.forEach(en => {
+        if (en.isIntersecting && !played) { played = true; play(); io.disconnect(); }
+      }), { threshold: .3 });
+      io.observe(root);
+    } else { play(); }
   })();
 </script>
 </body>
