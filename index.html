@@ -144,14 +144,6 @@
   ::selection{background:var(--accent);color:#14100b}
   section{scroll-margin-top:92px}
 
-  /* ---------- Desktop overall scale ---------- */
-  /* The whole desktop layout renders ~10% smaller — the look visitors
-     previously only got by zooming their browser out to 90% — without
-     them touching zoom. The mobile layout (≤860px) is not scaled. */
-  @media (min-width:861px){
-    :root{zoom:.9}
-  }
-
   /* ---------- Scroll reveal ---------- */
   .reveal{
     opacity:0;transform:translateY(28px);
